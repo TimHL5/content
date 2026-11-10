@@ -1,0 +1,114 @@
+{
+  "shots": [
+    {
+      "idx": 0,
+      "kind": "a_roll",
+      "framing": "mcu",
+      "camera_motion": "static",
+      "description": "solid color card filling the frame"
+    },
+    {
+      "idx": 1,
+      "kind": "a_roll",
+      "framing": "cu",
+      "camera_motion": "static",
+      "description": "solid color card filling the frame"
+    },
+    {
+      "idx": 2,
+      "kind": "a_roll",
+      "framing": "mcu",
+      "camera_motion": "static",
+      "description": "solid color card filling the frame"
+    },
+    {
+      "idx": 3,
+      "kind": "b_roll",
+      "framing": "cu",
+      "camera_motion": "static",
+      "description": "solid color card filling the frame"
+    },
+    {
+      "idx": 4,
+      "kind": "screen",
+      "framing": "screen",
+      "camera_motion": "static",
+      "description": "solid color card filling the frame"
+    },
+    {
+      "idx": 5,
+      "kind": "a_roll",
+      "framing": "cu",
+      "camera_motion": "static",
+      "description": "solid color card filling the frame"
+    },
+    {
+      "idx": 6,
+      "kind": "a_roll",
+      "framing": "mcu",
+      "camera_motion": "static",
+      "description": "solid color card filling the frame"
+    },
+    {
+      "idx": 7,
+      "kind": "a_roll",
+      "framing": "cu",
+      "camera_motion": "static",
+      "description": "solid color card filling the frame"
+    },
+    {
+      "idx": 8,
+      "kind": "a_roll",
+      "framing": "mcu",
+      "camera_motion": "static",
+      "description": "solid color card filling the frame"
+    },
+    {
+      "idx": 9,
+      "kind": "a_roll",
+      "framing": "cu",
+      "camera_motion": "static",
+      "description": "solid color card filling the frame"
+    },
+    {
+      "idx": 10,
+      "kind": "a_roll",
+      "framing": "mcu",
+      "camera_motion": "static",
+      "description": "solid color card filling the frame"
+    }
+  ],
+  "captions": {
+    "present": true,
+    "preset": "neon_glow",
+    "font_family": "Proxima Nova",
+    "case": "upper",
+    "words_per_chunk_min": 0,
+    "words_per_chunk_max": 3,
+    "lines": 1,
+    "position_y_pct": 1.4,
+    "fill": "#ffffff",
+    "stroke": "black",
+    "stroke_px": 6,
+    "shadow": true,
+    "highlight": "color",
+    "highlight_color": "#ffe600",
+    "emoji": "sparse",
+    "animation": "pop"
+  },
+  "overlays": [
+    {
+      "kind": "title",
+      "start_s": -1.0,
+      "end_s": 2.5,
+      "position": "top",
+      "text_example": "<number> things about <topic>"
+    }
+  ],
+  "setting_notes": "Synthetic color cards; no real setting.",
+  "confidence": {
+    "shots": 0.9,
+    "captions": 1.3,
+    "overlays": 0.4
+  }
+}

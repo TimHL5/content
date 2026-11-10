@@ -1,0 +1,74 @@
+{
+  "summary": "Fast color-card sequence with hard cuts roughly every second. Opens on a bold claim and closes with a short call to action.",
+  "hook": {
+    "type": "bold_claim",
+    "template": "Stop doing <common thing> if you want <outcome>",
+    "visual": "close-up, text overlay in the top third"
+  },
+  "beats": [
+    {
+      "id": "value",
+      "function": "value",
+      "start_s": 2.6,
+      "end_s": 11.1,
+      "technique": "numbered points with cutaway proof",
+      "must_have": true
+    },
+    {
+      "id": "hook",
+      "function": "hook",
+      "start_s": 0.0,
+      "end_s": 2.4,
+      "technique": "bold claim over a close-up",
+      "must_have": true
+    },
+    {
+      "id": "cta",
+      "function": "cta",
+      "start_s": 11.0,
+      "end_s": 99.0,
+      "technique": "direct follow ask",
+      "must_have": false
+    },
+    {
+      "id": "empty",
+      "function": "twist",
+      "start_s": 5.0,
+      "end_s": 5.0,
+      "technique": "zero-length beat that must be dropped",
+      "must_have": false
+    }
+  ],
+  "rules": {
+    "zoom_on": [
+      "emphasis_word",
+      "new_point",
+      "emphasis_word"
+    ],
+    "jump_cut_silences": true,
+    "transitions": [],
+    "loop_ending": false,
+    "text_card_usage": "none"
+  },
+  "audio_judgment": {
+    "sfx_density": "low",
+    "sfx_types": [
+      "pop",
+      "pop"
+    ],
+    "music_mood": "upbeat lo-fi"
+  },
+  "speech_judgment": {
+    "delivery": "energetic",
+    "voice_type": "on_camera"
+  },
+  "color_look": "bright and saturated",
+  "confidence": {
+    "hook": 0.8,
+    "beats": 0.7,
+    "rules": 0.6,
+    "audio": 0.5,
+    "speech": 0.9,
+    "color": 0.9
+  }
+}
