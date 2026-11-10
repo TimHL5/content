@@ -1,0 +1,187 @@
+{
+  "title_options": [
+    "Stop overpaying rent",
+    "3 renter mistakes",
+    "Read this before you sign",
+    "a fourth that is dropped"
+  ],
+  "script": [
+    {
+      "id": "L1",
+      "beat_id": "hook",
+      "text": "Stop wasting money on rent if you want to save.",
+      "emphasis_words": [
+        "wasting",
+        "save"
+      ],
+      "delivery_note": null
+    },
+    {
+      "id": "L2",
+      "beat_id": "value",
+      "text": "First, negotiate your lease before you sign anything at all.",
+      "emphasis_words": [
+        "negotiate"
+      ],
+      "delivery_note": null
+    },
+    {
+      "id": "L3",
+      "beat_id": "value",
+      "text": "Second, split utilities fairly and track every single bill monthly.",
+      "emphasis_words": [
+        "split",
+        "track"
+      ],
+      "delivery_note": null
+    },
+    {
+      "id": "L4",
+      "beat_id": "cta",
+      "text": "Follow for more tips that actually save you real money.",
+      "emphasis_words": [
+        "Follow"
+      ],
+      "delivery_note": null
+    }
+  ],
+  "shots": [
+    {
+      "id": "S1",
+      "beat_id": "hook",
+      "line_ids": [
+        "L1"
+      ],
+      "kind": "a_roll",
+      "framing": "cu",
+      "camera_motion": "static",
+      "setup_id": "desk",
+      "duration_s": 2.5,
+      "priority": "must",
+      "description": "a roll cu",
+      "direction": "Prop the phone at eye level and look into the lens.",
+      "will_be_cut": true,
+      "reference_shot_idx": 0,
+      "alternatives": []
+    },
+    {
+      "id": "S2",
+      "beat_id": "value",
+      "line_ids": [
+        "L2"
+      ],
+      "kind": "a_roll",
+      "framing": "mcu",
+      "camera_motion": "static",
+      "setup_id": "desk",
+      "duration_s": 3.0,
+      "priority": "must",
+      "description": "a roll mcu",
+      "direction": "Prop the phone at eye level and look into the lens.",
+      "will_be_cut": true,
+      "reference_shot_idx": null,
+      "alternatives": []
+    },
+    {
+      "id": "S3",
+      "beat_id": "value",
+      "line_ids": [],
+      "kind": "b_roll",
+      "framing": "overhead",
+      "camera_motion": "tracking",
+      "setup_id": "table",
+      "duration_s": 2.0,
+      "priority": "nice",
+      "description": "hands signing a lease",
+      "direction": "Prop the phone at eye level and look into the lens.",
+      "will_be_cut": false,
+      "reference_shot_idx": null,
+      "alternatives": [
+        "a close-up of your hands instead"
+      ]
+    },
+    {
+      "id": "S4",
+      "beat_id": "value",
+      "line_ids": [
+        "L3"
+      ],
+      "kind": "a_roll",
+      "framing": "mcu",
+      "camera_motion": "static",
+      "setup_id": "desk",
+      "duration_s": 2.0,
+      "priority": "must",
+      "description": "a roll mcu",
+      "direction": "Prop the phone at eye level and look into the lens.",
+      "will_be_cut": false,
+      "reference_shot_idx": null,
+      "alternatives": []
+    },
+    {
+      "id": "S5",
+      "beat_id": "value",
+      "line_ids": [],
+      "kind": "b_roll",
+      "framing": "cu",
+      "camera_motion": "static",
+      "setup_id": "table",
+      "duration_s": 1.5,
+      "priority": "nice",
+      "description": "stack of bills",
+      "direction": "Prop the phone at eye level and look into the lens.",
+      "will_be_cut": false,
+      "reference_shot_idx": null,
+      "alternatives": [
+        "a close-up of your hands instead"
+      ]
+    },
+    {
+      "id": "S6",
+      "beat_id": "cta",
+      "line_ids": [
+        "L4"
+      ],
+      "kind": "a_roll",
+      "framing": "cu",
+      "camera_motion": "static",
+      "setup_id": "desk",
+      "duration_s": 4.0,
+      "priority": "must",
+      "description": "a roll cu",
+      "direction": "Prop the phone at eye level and look into the lens.",
+      "will_be_cut": true,
+      "reference_shot_idx": null,
+      "alternatives": []
+    }
+  ],
+  "setups": [
+    {
+      "id": "desk",
+      "location": "home office",
+      "framing_summary": "phone at eye level, chest up",
+      "lighting": "face a window, no overhead light",
+      "audio": "phone within 1m",
+      "orientation": "vertical",
+      "props": []
+    },
+    {
+      "id": "table",
+      "location": "kitchen",
+      "framing_summary": "overhead of the table",
+      "lighting": "daylight from the side",
+      "audio": "no sound needed",
+      "orientation": "vertical",
+      "props": [
+        "lease",
+        "pen"
+      ]
+    }
+  ],
+  "checklist_notes": [
+    "Clean the lens.",
+    "Film the hook last, once you're warmed up."
+  ],
+  "music_brief": null,
+  "script_changes": null
+}
