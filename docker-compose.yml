@@ -8,6 +8,7 @@ x-backend: &backend
   working_dir: /repo/apps/api
   volumes:
     - .:/repo
+    - model_cache:/root/.cache/huggingface
   depends_on:
     postgres:
       condition: service_healthy
@@ -112,6 +113,7 @@ services:
 
 volumes:
   pgdata:
+  model_cache:
   miniodata:
   web_root_modules:
   web_app_modules:

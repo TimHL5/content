@@ -1,7 +1,7 @@
 # PLAN.md — StyleCut Build Plan
 
 Each phase ends with something demoable. Each task is sized for about one Claude Code session.
-Check boxes as tasks complete. **Current phase: 1**
+Check boxes as tasks complete. **Current phase: 2**
 
 ---
 
@@ -42,7 +42,7 @@ Check boxes as tasks complete. **Current phase: 1**
 **Goal:** every reference produces a validated StyleProfile JSON and a readable "Style Card" UI.
 Spec: `docs/STYLE_PROFILE_SPEC.md`
 
-- [ ] Pydantic `StyleProfile` v1 + `make types`.
+- [x] Pydantic `StyleProfile` v1 + `make types`.
 - [ ] `analysis/scene.py`: PySceneDetect (ContentDetector, AdaptiveDetector fallback) → cuts, shot durations, stats, and pacing curve (cuts per 5s window). Unit test against `vertical_hardcuts_15s.mp4` (±1 frame).
 - [ ] `analysis/audio.py`: loudness (pyloudnorm), BPM and beat grid (librosa), onset peaks, cut-to-beat alignment %. Test with the click track.
 - [ ] `analysis/speech.py`: faster-whisper with word timestamps → transcript, WPM, pause distribution, filler rate, speech coverage %.

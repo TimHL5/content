@@ -159,6 +159,279 @@
       "title": "AssetWithUrls",
       "type": "object"
     },
+    "Audio": {
+      "properties": {
+        "bpm": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Bpm"
+        },
+        "drops_s": {
+          "items": {
+            "type": "number"
+          },
+          "title": "Drops S",
+          "type": "array"
+        },
+        "energy_curve": {
+          "items": {
+            "type": "number"
+          },
+          "title": "Energy Curve",
+          "type": "array"
+        },
+        "integrated_lufs": {
+          "title": "Integrated Lufs",
+          "type": "number"
+        },
+        "music_mood": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Music Mood"
+        },
+        "music_present": {
+          "title": "Music Present",
+          "type": "boolean"
+        },
+        "sfx_density": {
+          "enum": [
+            "none",
+            "low",
+            "medium",
+            "high"
+          ],
+          "title": "Sfx Density",
+          "type": "string"
+        },
+        "sfx_types": {
+          "items": {
+            "enum": [
+              "whoosh",
+              "pop",
+              "ding",
+              "riser",
+              "bass_hit",
+              "click",
+              "record_scratch"
+            ],
+            "type": "string"
+          },
+          "title": "Sfx Types",
+          "type": "array"
+        }
+      },
+      "required": [
+        "integrated_lufs",
+        "music_present",
+        "energy_curve",
+        "drops_s",
+        "sfx_density",
+        "sfx_types"
+      ],
+      "title": "Audio",
+      "type": "object"
+    },
+    "Beat": {
+      "properties": {
+        "end_s": {
+          "title": "End S",
+          "type": "number"
+        },
+        "function": {
+          "enum": [
+            "hook",
+            "context",
+            "tension",
+            "value",
+            "proof",
+            "twist",
+            "payoff",
+            "cta",
+            "loop"
+          ],
+          "title": "Function",
+          "type": "string"
+        },
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "must_have": {
+          "title": "Must Have",
+          "type": "boolean"
+        },
+        "start_s": {
+          "title": "Start S",
+          "type": "number"
+        },
+        "technique": {
+          "title": "Technique",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "function",
+        "start_s",
+        "end_s",
+        "technique",
+        "must_have"
+      ],
+      "title": "Beat",
+      "type": "object"
+    },
+    "CaptionStyle": {
+      "properties": {
+        "animation": {
+          "enum": [
+            "none",
+            "pop",
+            "fade",
+            "typewriter",
+            "bounce"
+          ],
+          "title": "Animation",
+          "type": "string"
+        },
+        "case": {
+          "enum": [
+            "upper",
+            "lower",
+            "sentence",
+            "title"
+          ],
+          "title": "Case",
+          "type": "string"
+        },
+        "emoji": {
+          "enum": [
+            "none",
+            "sparse",
+            "frequent"
+          ],
+          "title": "Emoji",
+          "type": "string"
+        },
+        "fill": {
+          "title": "Fill",
+          "type": "string"
+        },
+        "font_family": {
+          "title": "Font Family",
+          "type": "string"
+        },
+        "highlight": {
+          "enum": [
+            "none",
+            "color",
+            "box",
+            "scale"
+          ],
+          "title": "Highlight",
+          "type": "string"
+        },
+        "highlight_color": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Highlight Color"
+        },
+        "lines": {
+          "enum": [
+            1,
+            2
+          ],
+          "title": "Lines",
+          "type": "integer"
+        },
+        "position_y_pct": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Position Y Pct",
+          "type": "number"
+        },
+        "present": {
+          "title": "Present",
+          "type": "boolean"
+        },
+        "preset": {
+          "title": "Preset",
+          "type": "string"
+        },
+        "shadow": {
+          "title": "Shadow",
+          "type": "boolean"
+        },
+        "stroke": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Stroke"
+        },
+        "stroke_px": {
+          "title": "Stroke Px",
+          "type": "integer"
+        },
+        "words_per_chunk": {
+          "additionalItems": false,
+          "items": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "integer"
+            }
+          ],
+          "maxItems": 2,
+          "minItems": 2,
+          "title": "Words Per Chunk",
+          "type": "array"
+        }
+      },
+      "required": [
+        "present",
+        "preset",
+        "font_family",
+        "case",
+        "words_per_chunk",
+        "lines",
+        "position_y_pct",
+        "fill",
+        "stroke_px",
+        "shadow",
+        "highlight",
+        "emoji",
+        "animation"
+      ],
+      "title": "CaptionStyle",
+      "type": "object"
+    },
     "CheckResult": {
       "properties": {
         "error": {
@@ -194,6 +467,129 @@
         "ok"
       ],
       "title": "CheckResult",
+      "type": "object"
+    },
+    "Color": {
+      "properties": {
+        "contrast": {
+          "title": "Contrast",
+          "type": "number"
+        },
+        "eq": {
+          "additionalProperties": {
+            "type": "number"
+          },
+          "title": "Eq",
+          "type": "object"
+        },
+        "look": {
+          "title": "Look",
+          "type": "string"
+        },
+        "luma_mean": {
+          "title": "Luma Mean",
+          "type": "number"
+        },
+        "saturation": {
+          "title": "Saturation",
+          "type": "number"
+        },
+        "warmth": {
+          "title": "Warmth",
+          "type": "number"
+        }
+      },
+      "required": [
+        "luma_mean",
+        "contrast",
+        "saturation",
+        "warmth",
+        "eq",
+        "look"
+      ],
+      "title": "Color",
+      "type": "object"
+    },
+    "EditingRules": {
+      "properties": {
+        "broll_ratio": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Broll Ratio",
+          "type": "number"
+        },
+        "jump_cut_silences": {
+          "title": "Jump Cut Silences",
+          "type": "boolean"
+        },
+        "loop_ending": {
+          "title": "Loop Ending",
+          "type": "boolean"
+        },
+        "punch_in_every_s": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Punch In Every S"
+        },
+        "punch_in_scale": {
+          "title": "Punch In Scale",
+          "type": "number"
+        },
+        "text_card_usage": {
+          "enum": [
+            "none",
+            "intro",
+            "sections",
+            "frequent"
+          ],
+          "title": "Text Card Usage",
+          "type": "string"
+        },
+        "transitions": {
+          "items": {
+            "enum": [
+              "hard_cut",
+              "whip",
+              "zoom",
+              "fade",
+              "glitch"
+            ],
+            "type": "string"
+          },
+          "title": "Transitions",
+          "type": "array"
+        },
+        "zoom_on": {
+          "items": {
+            "enum": [
+              "emphasis_word",
+              "new_point",
+              "joke",
+              "number"
+            ],
+            "type": "string"
+          },
+          "title": "Zoom On",
+          "type": "array"
+        }
+      },
+      "required": [
+        "punch_in_scale",
+        "zoom_on",
+        "broll_ratio",
+        "jump_cut_silences",
+        "transitions",
+        "loop_ending",
+        "text_card_usage"
+      ],
+      "title": "EditingRules",
       "type": "object"
     },
     "ErrorBody": {
@@ -278,6 +674,45 @@
         "checks"
       ],
       "title": "HealthOut",
+      "type": "object"
+    },
+    "Hook": {
+      "properties": {
+        "duration_s": {
+          "title": "Duration S",
+          "type": "number"
+        },
+        "template": {
+          "title": "Template",
+          "type": "string"
+        },
+        "type": {
+          "enum": [
+            "bold_claim",
+            "question",
+            "pov",
+            "list_tease",
+            "result_first",
+            "controversy",
+            "visual_shock",
+            "story_open",
+            "challenge"
+          ],
+          "title": "Type",
+          "type": "string"
+        },
+        "visual": {
+          "title": "Visual",
+          "type": "string"
+        }
+      },
+      "required": [
+        "type",
+        "duration_s",
+        "template",
+        "visual"
+      ],
+      "title": "Hook",
       "type": "object"
     },
     "JobAccepted": {
@@ -487,6 +922,116 @@
       "title": "JobOut",
       "type": "object"
     },
+    "Overlay": {
+      "properties": {
+        "end_s": {
+          "title": "End S",
+          "type": "number"
+        },
+        "kind": {
+          "enum": [
+            "title",
+            "label",
+            "arrow",
+            "emoji",
+            "progress_bar",
+            "sticker",
+            "other"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "position": {
+          "enum": [
+            "top",
+            "center",
+            "bottom",
+            "follow"
+          ],
+          "title": "Position",
+          "type": "string"
+        },
+        "start_s": {
+          "title": "Start S",
+          "type": "number"
+        },
+        "text_example": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Text Example"
+        }
+      },
+      "required": [
+        "kind",
+        "start_s",
+        "end_s",
+        "position"
+      ],
+      "title": "Overlay",
+      "type": "object"
+    },
+    "Pacing": {
+      "properties": {
+        "acceleration": {
+          "enum": [
+            "steady",
+            "speeds_up",
+            "slows_down",
+            "bursty"
+          ],
+          "title": "Acceleration",
+          "type": "string"
+        },
+        "cut_on_beat_pct": {
+          "anyOf": [
+            {
+              "maximum": 1,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Cut On Beat Pct"
+        },
+        "cuts_per_5s": {
+          "items": {
+            "type": "number"
+          },
+          "title": "Cuts Per 5S",
+          "type": "array"
+        },
+        "max_shot_s": {
+          "title": "Max Shot S",
+          "type": "number"
+        },
+        "shot_count": {
+          "title": "Shot Count",
+          "type": "integer"
+        },
+        "shot_len_s": {
+          "$ref": "#/$defs/Stats"
+        }
+      },
+      "required": [
+        "shot_count",
+        "shot_len_s",
+        "cuts_per_5s",
+        "acceleration",
+        "max_shot_s"
+      ],
+      "title": "Pacing",
+      "type": "object"
+    },
     "ReferenceCreateIn": {
       "description": "Exactly one of `url` (platform link) or `asset_id` (an uploaded reference file).",
       "properties": {
@@ -594,6 +1139,19 @@
           ],
           "title": "Status",
           "type": "string"
+        },
+        "style_profile_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Style Profile Id"
         }
       },
       "required": [
@@ -604,6 +1162,496 @@
         "created_at"
       ],
       "title": "ReferenceOut",
+      "type": "object"
+    },
+    "Shot": {
+      "properties": {
+        "beat_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Beat Id"
+        },
+        "camera_motion": {
+          "enum": [
+            "static",
+            "handheld",
+            "push_in",
+            "pull_out",
+            "pan",
+            "whip",
+            "tracking"
+          ],
+          "title": "Camera Motion",
+          "type": "string"
+        },
+        "description": {
+          "title": "Description",
+          "type": "string"
+        },
+        "end_s": {
+          "title": "End S",
+          "type": "number"
+        },
+        "framing": {
+          "enum": [
+            "ecu",
+            "cu",
+            "mcu",
+            "ms",
+            "ws",
+            "overhead",
+            "pov",
+            "screen"
+          ],
+          "title": "Framing",
+          "type": "string"
+        },
+        "idx": {
+          "title": "Idx",
+          "type": "integer"
+        },
+        "kind": {
+          "enum": [
+            "a_roll",
+            "b_roll",
+            "screen",
+            "text_card",
+            "reaction",
+            "product",
+            "pov",
+            "other"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "motion_score": {
+          "title": "Motion Score",
+          "type": "number"
+        },
+        "punch_in": {
+          "title": "Punch In",
+          "type": "boolean"
+        },
+        "start_s": {
+          "title": "Start S",
+          "type": "number"
+        }
+      },
+      "required": [
+        "idx",
+        "start_s",
+        "end_s",
+        "kind",
+        "framing",
+        "camera_motion",
+        "punch_in",
+        "motion_score",
+        "description"
+      ],
+      "title": "Shot",
+      "type": "object"
+    },
+    "SourceInfo": {
+      "properties": {
+        "aspect": {
+          "enum": [
+            "9:16",
+            "1:1",
+            "4:5",
+            "16:9"
+          ],
+          "title": "Aspect",
+          "type": "string"
+        },
+        "duration_s": {
+          "title": "Duration S",
+          "type": "number"
+        },
+        "fps": {
+          "title": "Fps",
+          "type": "number"
+        },
+        "platform": {
+          "enum": [
+            "tiktok",
+            "instagram",
+            "youtube",
+            "upload"
+          ],
+          "title": "Platform",
+          "type": "string"
+        },
+        "url": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Url"
+        }
+      },
+      "required": [
+        "platform",
+        "duration_s",
+        "aspect",
+        "fps"
+      ],
+      "title": "SourceInfo",
+      "type": "object"
+    },
+    "Speech": {
+      "properties": {
+        "coverage_pct": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Coverage Pct",
+          "type": "number"
+        },
+        "delivery": {
+          "anyOf": [
+            {
+              "enum": [
+                "energetic",
+                "conversational",
+                "calm",
+                "deadpan",
+                "whisper"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Delivery"
+        },
+        "filler_rate": {
+          "title": "Filler Rate",
+          "type": "number"
+        },
+        "pause_ms_p50": {
+          "title": "Pause Ms P50",
+          "type": "number"
+        },
+        "pause_ms_p90": {
+          "title": "Pause Ms P90",
+          "type": "number"
+        },
+        "present": {
+          "title": "Present",
+          "type": "boolean"
+        },
+        "voice_type": {
+          "enum": [
+            "on_camera",
+            "voiceover",
+            "mixed",
+            "none"
+          ],
+          "title": "Voice Type",
+          "type": "string"
+        },
+        "wpm": {
+          "title": "Wpm",
+          "type": "number"
+        }
+      },
+      "required": [
+        "present",
+        "coverage_pct",
+        "wpm",
+        "pause_ms_p50",
+        "pause_ms_p90",
+        "filler_rate",
+        "voice_type"
+      ],
+      "title": "Speech",
+      "type": "object"
+    },
+    "Stats": {
+      "properties": {
+        "max": {
+          "title": "Max",
+          "type": "number"
+        },
+        "mean": {
+          "title": "Mean",
+          "type": "number"
+        },
+        "median": {
+          "title": "Median",
+          "type": "number"
+        },
+        "min": {
+          "title": "Min",
+          "type": "number"
+        },
+        "p10": {
+          "title": "P10",
+          "type": "number"
+        },
+        "p90": {
+          "title": "P90",
+          "type": "number"
+        }
+      },
+      "required": [
+        "mean",
+        "median",
+        "p10",
+        "p90",
+        "min",
+        "max"
+      ],
+      "title": "Stats",
+      "type": "object"
+    },
+    "StyleProfile": {
+      "properties": {
+        "audio": {
+          "$ref": "#/$defs/Audio"
+        },
+        "beats": {
+          "items": {
+            "$ref": "#/$defs/Beat"
+          },
+          "title": "Beats",
+          "type": "array"
+        },
+        "captions": {
+          "$ref": "#/$defs/CaptionStyle"
+        },
+        "color": {
+          "$ref": "#/$defs/Color"
+        },
+        "confidence": {
+          "additionalProperties": {
+            "maximum": 1,
+            "minimum": 0,
+            "type": "number"
+          },
+          "title": "Confidence",
+          "type": "object"
+        },
+        "hook": {
+          "$ref": "#/$defs/Hook"
+        },
+        "id": {
+          "format": "uuid",
+          "title": "Id",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "overlays": {
+          "items": {
+            "$ref": "#/$defs/Overlay"
+          },
+          "title": "Overlays",
+          "type": "array"
+        },
+        "pacing": {
+          "$ref": "#/$defs/Pacing"
+        },
+        "rules": {
+          "$ref": "#/$defs/EditingRules"
+        },
+        "schema_version": {
+          "const": 1,
+          "default": 1,
+          "title": "Schema Version",
+          "type": "integer"
+        },
+        "shots": {
+          "items": {
+            "$ref": "#/$defs/Shot"
+          },
+          "title": "Shots",
+          "type": "array"
+        },
+        "source": {
+          "$ref": "#/$defs/SourceInfo"
+        },
+        "speech": {
+          "$ref": "#/$defs/Speech"
+        },
+        "summary": {
+          "title": "Summary",
+          "type": "string"
+        },
+        "user_overrides": {
+          "additionalProperties": true,
+          "default": {},
+          "title": "User Overrides",
+          "type": "object"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "source",
+        "summary",
+        "pacing",
+        "shots",
+        "captions",
+        "overlays",
+        "speech",
+        "audio",
+        "color",
+        "hook",
+        "beats",
+        "rules",
+        "confidence"
+      ],
+      "title": "StyleProfile",
+      "type": "object"
+    },
+    "StyleProfileOut": {
+      "description": "`profile` has the user's overrides applied; `overrides` lists them.",
+      "properties": {
+        "created_at": {
+          "format": "date-time",
+          "title": "Created At",
+          "type": "string"
+        },
+        "id": {
+          "format": "uuid",
+          "title": "Id",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "overrides": {
+          "additionalProperties": true,
+          "title": "Overrides",
+          "type": "object"
+        },
+        "profile": {
+          "$ref": "#/$defs/StyleProfile"
+        },
+        "sheet_urls": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Sheet Urls",
+          "type": "array"
+        },
+        "updated_at": {
+          "format": "date-time",
+          "title": "Updated At",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "profile",
+        "overrides",
+        "sheet_urls",
+        "created_at",
+        "updated_at"
+      ],
+      "title": "StyleProfileOut",
+      "type": "object"
+    },
+    "StyleProfilePatch": {
+      "description": "`overrides` maps JSON pointers to new values (`{\"/captions/fill\": \"#FFE600\"}`);\na null value removes that override and restores the analyzed value.",
+      "properties": {
+        "name": {
+          "anyOf": [
+            {
+              "maxLength": 200,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Name"
+        },
+        "overrides": {
+          "anyOf": [
+            {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Overrides"
+        }
+      },
+      "title": "StyleProfilePatch",
+      "type": "object"
+    },
+    "StyleProfileSummary": {
+      "properties": {
+        "created_at": {
+          "format": "date-time",
+          "title": "Created At",
+          "type": "string"
+        },
+        "duration_s": {
+          "title": "Duration S",
+          "type": "number"
+        },
+        "hook_type": {
+          "title": "Hook Type",
+          "type": "string"
+        },
+        "id": {
+          "format": "uuid",
+          "title": "Id",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "platform": {
+          "title": "Platform",
+          "type": "string"
+        },
+        "shot_count": {
+          "title": "Shot Count",
+          "type": "integer"
+        },
+        "summary": {
+          "title": "Summary",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "summary",
+        "platform",
+        "duration_s",
+        "shot_count",
+        "hook_type",
+        "created_at"
+      ],
+      "title": "StyleProfileSummary",
       "type": "object"
     },
     "UploadCompleteIn": {

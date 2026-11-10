@@ -16,7 +16,7 @@ from sqlalchemy import (
     Text,
     text,
 )
-from sqlalchemy.dialects.postgresql import JSONB
+from sqlalchemy.dialects.postgresql import ARRAY, JSONB
 from sqlalchemy.dialects.postgresql import UUID as PGUUID
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -124,3 +124,49 @@ class ReferenceVideo(Base):
     )
     # {code, message, hint} when status is "failed".
     error: Mapped[dict[str, Any] | None] = mapped_column(JSONB)
+
+
+class StyleProfileRow(Base):
+    """An editable style. `data` holds a validated `schemas.style_profile.StyleProfile`."""
+
+    __tablename__ = "style_profiles"
+    __table_args__ = (Index("ix_style_profiles_owner_created", "owner_id", "created_at"),)
+
+    owner_id: Mapped[UUID] = mapped_column(
+        PGUUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False
+    )
+    name: Mapped[str] = mapped_column(String(200), nullable=False)
+    schema_version: Mapped[int] = mapped_column(Integer, nullable=False)
+    data: Mapped[dict[str, Any]] = mapped_column(JSONB, nullable=False)
+    source_reference_ids: Mapped[list[UUID]] = mapped_column(
+        ARRAY(PGUUID(as_uuid=True)), nullable=False, server_default=text("'{}'::uuid[]")
+    )
+    is_blend: Mapped[bool] = mapped_column(Boolean, nullable=False, server_default=text("false"))
+
+
+class LlmCall(Base):
+    """One row per LLM call (including cache hits) for cost tracking."""
+
+    __tablename__ = "llm_calls"
+    __table_args__ = (Index("ix_llm_calls_job_id", "job_id"),)
+
+    job_id: Mapped[UUID | None] = mapped_column(
+        PGUUID(as_uuid=True), ForeignKey("jobs.id", ondelete="SET NULL")
+    )
+    prompt_id: Mapped[str] = mapped_column(String(64), nullable=False)
+    prompt_version: Mapped[int] = mapped_column(Integer, nullable=False)
+    model: Mapped[str] = mapped_column(String(64), nullable=False)
+    input_tokens: Mapped[int] = mapped_column(Integer, nullable=False, server_default="0")
+    output_tokens: Mapped[int] = mapped_column(Integer, nullable=False, server_default="0")
+    latency_ms: Mapped[int] = mapped_column(Integer, nullable=False, server_default="0")
+    cost_usd: Mapped[float] = mapped_column(Float, nullable=False, server_default="0")
+    cache_hit: Mapped[bool] = mapped_column(Boolean, nullable=False, server_default=text("false"))
+
+
+class LlmCache(Base):
+    """key = sha256(prompt_id, version, model, inputs, images)."""
+
+    __tablename__ = "llm_cache"
+
+    key: Mapped[str] = mapped_column(String(64), unique=True, nullable=False)
+    output: Mapped[dict[str, Any]] = mapped_column(JSONB, nullable=False)

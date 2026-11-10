@@ -13,13 +13,72 @@ export type Status = "uploading" | "ready" | "failed" | "expired";
 export type Width = number | null;
 export type ProxyUrl = string | null;
 export type Url = string | null;
+export type Bpm = number | null;
+export type DropsS = number[];
+export type EnergyCurve = number[];
+export type IntegratedLufs = number;
+export type MusicMood = string | null;
+export type MusicPresent = boolean;
+export type SfxDensity = "none" | "low" | "medium" | "high";
+export type SfxTypes = ("whoosh" | "pop" | "ding" | "riser" | "bass_hit" | "click" | "record_scratch")[];
+export type EndS = number;
+export type Function = "hook" | "context" | "tension" | "value" | "proof" | "twist" | "payoff" | "cta" | "loop";
+export type Id1 = string;
+export type MustHave = boolean;
+export type StartS = number;
+export type Technique = string;
+export type Animation = "none" | "pop" | "fade" | "typewriter" | "bounce";
+export type Case = "upper" | "lower" | "sentence" | "title";
+export type Emoji = "none" | "sparse" | "frequent";
+export type Fill = string;
+export type FontFamily = string;
+export type Highlight = "none" | "color" | "box" | "scale";
+export type HighlightColor = string | null;
+export type Lines = 1 | 2;
+export type PositionYPct = number;
+export type Present = boolean;
+export type Preset = string;
+export type Shadow = boolean;
+export type Stroke = string | null;
+export type StrokePx = number;
+/**
+ * @minItems 2
+ * @maxItems 2
+ */
+export type WordsPerChunk = [number, number];
 export type Error = string | null;
 export type LatencyMs = number | null;
 export type Ok = boolean;
+export type Contrast = number;
+export type Look = string;
+export type LumaMean = number;
+export type Saturation = number;
+export type Warmth = number;
+export type BrollRatio = number;
+export type JumpCutSilences = boolean;
+export type LoopEnding = boolean;
+export type PunchInEveryS = number | null;
+export type PunchInScale = number;
+export type TextCardUsage = "none" | "intro" | "sections" | "frequent";
+export type Transitions = ("hard_cut" | "whip" | "zoom" | "fade" | "glitch")[];
+export type ZoomOn = ("emphasis_word" | "new_point" | "joke" | "number")[];
 export type Code = string;
 export type Hint = string | null;
 export type Message = string;
 export type Status1 = "ok" | "degraded";
+export type DurationS1 = number;
+export type Template = string;
+export type Type =
+  | "bold_claim"
+  | "question"
+  | "pov"
+  | "list_tease"
+  | "result_first"
+  | "controversy"
+  | "visual_shock"
+  | "story_open"
+  | "challenge";
+export type Visual = string;
 export type JobId = string;
 export type ResourceId = string | null;
 export type Error1 = string | null;
@@ -31,7 +90,7 @@ export type Step = string | null;
 export type Attempts = number;
 export type CreatedAt1 = string;
 export type Error2 = string | null;
-export type Id1 = string;
+export type Id2 = string;
 export type Output = {
   [k: string]: unknown;
 } | null;
@@ -39,17 +98,81 @@ export type ParentId = string | null;
 export type Progress1 = number;
 export type Status3 = "queued" | "running" | "succeeded" | "failed";
 export type Step1 = string | null;
-export type Type = string;
+export type Type1 = string;
 export type UpdatedAt = string;
+export type EndS1 = number;
+export type Kind1 = "title" | "label" | "arrow" | "emoji" | "progress_bar" | "sticker" | "other";
+export type Position = "top" | "center" | "bottom" | "follow";
+export type StartS1 = number;
+export type TextExample = string | null;
+export type Acceleration = "steady" | "speeds_up" | "slows_down" | "bursty";
+export type CutOnBeatPct = number | null;
+export type CutsPer5S = number[];
+export type MaxShotS = number;
+export type ShotCount = number;
+export type Max = number;
+export type Mean = number;
+export type Median = number;
+export type Min = number;
+export type P10 = number;
+export type P90 = number;
 export type AssetId = string | null;
 export type Url1 = string | null;
 export type AssetId1 = string;
 export type CreatedAt2 = string;
-export type Id2 = string;
+export type Id3 = string;
 export type JobId2 = string | null;
 export type Platform = "tiktok" | "instagram" | "youtube" | "upload";
 export type SourceUrl = string | null;
 export type Status4 = "queued" | "ingesting" | "ingested" | "analyzing" | "ready" | "failed";
+export type StyleProfileId = string | null;
+export type BeatId = string | null;
+export type CameraMotion = "static" | "handheld" | "push_in" | "pull_out" | "pan" | "whip" | "tracking";
+export type Description = string;
+export type EndS2 = number;
+export type Framing = "ecu" | "cu" | "mcu" | "ms" | "ws" | "overhead" | "pov" | "screen";
+export type Idx = number;
+export type Kind2 = "a_roll" | "b_roll" | "screen" | "text_card" | "reaction" | "product" | "pov" | "other";
+export type MotionScore = number;
+export type PunchIn = boolean;
+export type StartS2 = number;
+export type Aspect = "9:16" | "1:1" | "4:5" | "16:9";
+export type DurationS2 = number;
+export type Fps1 = number;
+export type Platform1 = "tiktok" | "instagram" | "youtube" | "upload";
+export type Url2 = string | null;
+export type CoveragePct = number;
+export type Delivery = ("energetic" | "conversational" | "calm" | "deadpan" | "whisper") | null;
+export type FillerRate = number;
+export type PauseMsP50 = number;
+export type PauseMsP90 = number;
+export type Present1 = boolean;
+export type VoiceType = "on_camera" | "voiceover" | "mixed" | "none";
+export type Wpm = number;
+export type Beats = Beat[];
+export type Id4 = string;
+export type Name = string;
+export type Overlays = Overlay[];
+export type SchemaVersion = 1;
+export type Shots = Shot[];
+export type Summary = string;
+export type CreatedAt3 = string;
+export type Id5 = string;
+export type Name1 = string;
+export type SheetUrls = string[];
+export type UpdatedAt1 = string;
+export type Name2 = string | null;
+export type Overrides1 = {
+  [k: string]: unknown;
+} | null;
+export type CreatedAt4 = string;
+export type DurationS3 = number;
+export type HookType = string;
+export type Id6 = string;
+export type Name3 = string;
+export type Platform2 = string;
+export type ShotCount1 = number;
+export type Summary1 = string;
 /**
  * @minItems 1
  */
@@ -59,12 +182,12 @@ export type PartNumber = number;
 export type UploadId = string;
 export type ContentType = string;
 export type Filename = string;
-export type Kind1 = "reference" | "music" | "sfx";
+export type Kind3 = "reference" | "music" | "sfx";
 export type Size = number;
 export type AssetId2 = string;
 export type PartSize = number;
 export type PartNumber1 = number;
-export type Url2 = string;
+export type Url3 = string;
 export type Parts1 = UploadPartUrl[];
 export type UploadId1 = string;
 
@@ -102,12 +225,88 @@ export interface AssetWithUrls {
 }
 /**
  * This interface was referenced by `StyleCutSchemas`'s JSON-Schema
+ * via the `definition` "Audio".
+ */
+export interface Audio {
+  bpm?: Bpm;
+  drops_s: DropsS;
+  energy_curve: EnergyCurve;
+  integrated_lufs: IntegratedLufs;
+  music_mood?: MusicMood;
+  music_present: MusicPresent;
+  sfx_density: SfxDensity;
+  sfx_types: SfxTypes;
+}
+/**
+ * This interface was referenced by `StyleCutSchemas`'s JSON-Schema
+ * via the `definition` "Beat".
+ */
+export interface Beat {
+  end_s: EndS;
+  function: Function;
+  id: Id1;
+  must_have: MustHave;
+  start_s: StartS;
+  technique: Technique;
+}
+/**
+ * This interface was referenced by `StyleCutSchemas`'s JSON-Schema
+ * via the `definition` "CaptionStyle".
+ */
+export interface CaptionStyle {
+  animation: Animation;
+  case: Case;
+  emoji: Emoji;
+  fill: Fill;
+  font_family: FontFamily;
+  highlight: Highlight;
+  highlight_color?: HighlightColor;
+  lines: Lines;
+  position_y_pct: PositionYPct;
+  present: Present;
+  preset: Preset;
+  shadow: Shadow;
+  stroke?: Stroke;
+  stroke_px: StrokePx;
+  words_per_chunk: WordsPerChunk;
+}
+/**
+ * This interface was referenced by `StyleCutSchemas`'s JSON-Schema
  * via the `definition` "CheckResult".
  */
 export interface CheckResult {
   error?: Error;
   latency_ms?: LatencyMs;
   ok: Ok;
+}
+/**
+ * This interface was referenced by `StyleCutSchemas`'s JSON-Schema
+ * via the `definition` "Color".
+ */
+export interface Color {
+  contrast: Contrast;
+  eq: Eq;
+  look: Look;
+  luma_mean: LumaMean;
+  saturation: Saturation;
+  warmth: Warmth;
+}
+export interface Eq {
+  [k: string]: number;
+}
+/**
+ * This interface was referenced by `StyleCutSchemas`'s JSON-Schema
+ * via the `definition` "EditingRules".
+ */
+export interface EditingRules {
+  broll_ratio: BrollRatio;
+  jump_cut_silences: JumpCutSilences;
+  loop_ending: LoopEnding;
+  punch_in_every_s?: PunchInEveryS;
+  punch_in_scale: PunchInScale;
+  text_card_usage: TextCardUsage;
+  transitions: Transitions;
+  zoom_on: ZoomOn;
 }
 /**
  * This interface was referenced by `StyleCutSchemas`'s JSON-Schema
@@ -145,6 +344,16 @@ export interface HealthOut {
   status: Status1;
 }
 /**
+ * This interface was referenced by `StyleCutSchemas`'s JSON-Schema
+ * via the `definition` "Hook".
+ */
+export interface Hook {
+  duration_s: DurationS1;
+  template: Template;
+  type: Type;
+  visual: Visual;
+}
+/**
  * Body of every `202` response for a long-running operation.
  *
  * This interface was referenced by `StyleCutSchemas`'s JSON-Schema
@@ -176,18 +385,53 @@ export interface JobOut {
   attempts: Attempts;
   created_at: CreatedAt1;
   error?: Error2;
-  id: Id1;
+  id: Id2;
   input: Input;
   output?: Output;
   parent_id?: ParentId;
   progress: Progress1;
   status: Status3;
   step?: Step1;
-  type: Type;
+  type: Type1;
   updated_at: UpdatedAt;
 }
 export interface Input {
   [k: string]: unknown;
+}
+/**
+ * This interface was referenced by `StyleCutSchemas`'s JSON-Schema
+ * via the `definition` "Overlay".
+ */
+export interface Overlay {
+  end_s: EndS1;
+  kind: Kind1;
+  position: Position;
+  start_s: StartS1;
+  text_example?: TextExample;
+}
+/**
+ * This interface was referenced by `StyleCutSchemas`'s JSON-Schema
+ * via the `definition` "Pacing".
+ */
+export interface Pacing {
+  acceleration: Acceleration;
+  cut_on_beat_pct?: CutOnBeatPct;
+  cuts_per_5s: CutsPer5S;
+  max_shot_s: MaxShotS;
+  shot_count: ShotCount;
+  shot_len_s: Stats;
+}
+/**
+ * This interface was referenced by `StyleCutSchemas`'s JSON-Schema
+ * via the `definition` "Stats".
+ */
+export interface Stats {
+  max: Max;
+  mean: Mean;
+  median: Median;
+  min: Min;
+  p10: P10;
+  p90: P90;
 }
 /**
  * Exactly one of `url` (platform link) or `asset_id` (an uploaded reference file).
@@ -207,11 +451,125 @@ export interface ReferenceOut {
   asset_id: AssetId1;
   created_at: CreatedAt2;
   error?: ErrorBody | null;
-  id: Id2;
+  id: Id3;
   job_id?: JobId2;
   platform: Platform;
   source_url?: SourceUrl;
   status: Status4;
+  style_profile_id?: StyleProfileId;
+}
+/**
+ * This interface was referenced by `StyleCutSchemas`'s JSON-Schema
+ * via the `definition` "Shot".
+ */
+export interface Shot {
+  beat_id?: BeatId;
+  camera_motion: CameraMotion;
+  description: Description;
+  end_s: EndS2;
+  framing: Framing;
+  idx: Idx;
+  kind: Kind2;
+  motion_score: MotionScore;
+  punch_in: PunchIn;
+  start_s: StartS2;
+}
+/**
+ * This interface was referenced by `StyleCutSchemas`'s JSON-Schema
+ * via the `definition` "SourceInfo".
+ */
+export interface SourceInfo {
+  aspect: Aspect;
+  duration_s: DurationS2;
+  fps: Fps1;
+  platform: Platform1;
+  url?: Url2;
+}
+/**
+ * This interface was referenced by `StyleCutSchemas`'s JSON-Schema
+ * via the `definition` "Speech".
+ */
+export interface Speech {
+  coverage_pct: CoveragePct;
+  delivery?: Delivery;
+  filler_rate: FillerRate;
+  pause_ms_p50: PauseMsP50;
+  pause_ms_p90: PauseMsP90;
+  present: Present1;
+  voice_type: VoiceType;
+  wpm: Wpm;
+}
+/**
+ * This interface was referenced by `StyleCutSchemas`'s JSON-Schema
+ * via the `definition` "StyleProfile".
+ */
+export interface StyleProfile {
+  audio: Audio;
+  beats: Beats;
+  captions: CaptionStyle;
+  color: Color;
+  confidence: Confidence;
+  hook: Hook;
+  id: Id4;
+  name: Name;
+  overlays: Overlays;
+  pacing: Pacing;
+  rules: EditingRules;
+  schema_version?: SchemaVersion;
+  shots: Shots;
+  source: SourceInfo;
+  speech: Speech;
+  summary: Summary;
+  user_overrides?: UserOverrides;
+}
+export interface Confidence {
+  [k: string]: number;
+}
+export interface UserOverrides {
+  [k: string]: unknown;
+}
+/**
+ * `profile` has the user's overrides applied; `overrides` lists them.
+ *
+ * This interface was referenced by `StyleCutSchemas`'s JSON-Schema
+ * via the `definition` "StyleProfileOut".
+ */
+export interface StyleProfileOut {
+  created_at: CreatedAt3;
+  id: Id5;
+  name: Name1;
+  overrides: Overrides;
+  profile: StyleProfile;
+  sheet_urls: SheetUrls;
+  updated_at: UpdatedAt1;
+}
+export interface Overrides {
+  [k: string]: unknown;
+}
+/**
+ * `overrides` maps JSON pointers to new values (`{"/captions/fill": "#FFE600"}`);
+ * a null value removes that override and restores the analyzed value.
+ *
+ * This interface was referenced by `StyleCutSchemas`'s JSON-Schema
+ * via the `definition` "StyleProfilePatch".
+ */
+export interface StyleProfilePatch {
+  name?: Name2;
+  overrides?: Overrides1;
+}
+/**
+ * This interface was referenced by `StyleCutSchemas`'s JSON-Schema
+ * via the `definition` "StyleProfileSummary".
+ */
+export interface StyleProfileSummary {
+  created_at: CreatedAt4;
+  duration_s: DurationS3;
+  hook_type: HookType;
+  id: Id6;
+  name: Name3;
+  platform: Platform2;
+  shot_count: ShotCount1;
+  summary: Summary1;
 }
 /**
  * This interface was referenced by `StyleCutSchemas`'s JSON-Schema
@@ -243,7 +601,7 @@ export interface UploadCompleteOut {
 export interface UploadCreateIn {
   content_type?: ContentType;
   filename: Filename;
-  kind: Kind1;
+  kind: Kind3;
   size: Size;
 }
 /**
@@ -262,5 +620,5 @@ export interface UploadCreateOut {
  */
 export interface UploadPartUrl {
   part_number: PartNumber1;
-  url: Url2;
+  url: Url3;
 }

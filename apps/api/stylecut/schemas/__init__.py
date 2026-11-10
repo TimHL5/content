@@ -18,6 +18,12 @@ from stylecut.schemas.media import (
     UploadCreateIn,
     UploadCreateOut,
 )
+from stylecut.schemas.style_profile import StyleProfile
+from stylecut.schemas.style_profile_api import (
+    StyleProfileOut,
+    StyleProfilePatch,
+    StyleProfileSummary,
+)
 
 EXPORTED_MODELS: list[type[BaseModel]] = [
     AssetWithUrls,
@@ -28,6 +34,10 @@ EXPORTED_MODELS: list[type[BaseModel]] = [
     JobOut,
     ReferenceCreateIn,
     ReferenceOut,
+    StyleProfile,
+    StyleProfileOut,
+    StyleProfilePatch,
+    StyleProfileSummary,
     UploadCompleteIn,
     UploadCompleteOut,
     UploadCreateIn,

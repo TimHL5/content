@@ -90,5 +90,6 @@ class ReferenceOut(BaseModel):
     source_url: str | None = None
     asset_id: UUID
     job_id: UUID | None = None
+    style_profile_id: UUID | None = None  # set once analysis has produced a style
     error: ErrorBody | None = None
     created_at: datetime

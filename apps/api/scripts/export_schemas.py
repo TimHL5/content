@@ -16,6 +16,20 @@ REPO_ROOT = Path(__file__).resolve().parents[3]
 DEFAULT_OUT = REPO_ROOT / "packages" / "schemas" / "generated" / "schemas.json"
 
 
+def _tuples_for_typescript(node: Any) -> Any:
+    """Pydantic emits fixed-length tuples as `prefixItems` (JSON Schema 2020-12). The
+    TypeScript generator only understands the older `items: [...]` form."""
+    if isinstance(node, list):
+        return [_tuples_for_typescript(item) for item in node]
+    if not isinstance(node, dict):
+        return node
+    out = {key: _tuples_for_typescript(value) for key, value in node.items()}
+    if "prefixItems" in out:
+        out["items"] = out.pop("prefixItems")
+        out["additionalItems"] = False
+    return out
+
+
 def build_schema() -> dict[str, Any]:
     _, defs = models_json_schema(
         [(model, "serialization") for model in EXPORTED_MODELS],
@@ -27,7 +41,7 @@ def build_schema() -> dict[str, Any]:
         "description": "Generated from apps/api/stylecut/schemas. Do not edit.",
         "type": "object",
         "additionalProperties": False,
-        "$defs": dict(sorted(defs["$defs"].items())),
+        "$defs": _tuples_for_typescript(dict(sorted(defs["$defs"].items()))),
     }
 
 
