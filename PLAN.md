@@ -31,7 +31,7 @@ Check boxes as tasks complete. **Current phase: 1**
 - [x] URL normalization and platform detection. Friendly errors for private, removed, region-locked, or too-long (>3 min) videos.
 - [x] `media.probe()` (ffprobe → duration, w/h, fps, rotation, audio streams).
 - [x] Proxy transcode: 540p H.264 (`-preset veryfast`), CFR 30fps, AAC 48k; plus a 16k mono WAV for speech.
-- [ ] S3 lifecycle rule: `references/raw/*` expires in 24h.
+- [x] S3 lifecycle rule: `references/raw/*` expires in 24h.
 - [ ] Web: "New Style" page with URL paste box and drag-and-drop, live job progress, proxy player.
 
 **Done when:** a TikTok URL and an uploaded MP4 both produce a playable proxy within 30s for a 30s clip (target <15s, see ARCHITECTURE.md); failed URLs show a clear message and offer upload.
