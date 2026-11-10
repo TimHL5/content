@@ -93,7 +93,7 @@ footage/{project_id}/{asset_id}/transcript.json
 footage/{project_id}/{asset_id}/faces.json
 library/{user_id}/music/{asset_id}.{ext}
 library/{user_id}/sfx/{asset_id}.{ext}
-renders/{timeline_id}/segments/{segment_hash}.mp4   # segment cache
+renders/{project_id}/segments/{segment_hash}.mp4   # segment cache, shared by all timeline versions of a project
 renders/{timeline_id}/{preset}.mp4
 ```
 
@@ -115,7 +115,7 @@ Published on Redis channel `job:{id}`:
 ## Performance targets
 | Step | Target (30s clip) |
 |---|---|
-| Ingest + proxy | < 15s |
+| Ingest + proxy | < 15s (target); < 30s is the Phase 1 acceptance bar |
 | Full analysis | < 90s (GPU) |
 | Shoot plan | < 20s |
 | Auto-assemble (5 min of raw footage) | < 120s |

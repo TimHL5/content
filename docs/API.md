@@ -3,16 +3,23 @@
 All long operations return `202 {job_id, resource_id}`. Track them with `GET /jobs/{id}` or SSE `GET /jobs/{id}/events`.
 Errors: `{"error": {"code": "INGEST_PRIVATE_VIDEO", "message": "…", "hint": "Upload the file instead"}}`.
 
+## Health
+| Method | Path | Notes |
+|---|---|---|
+| GET | `/health` | `{status, checks:{db, redis, s3}}`; 200 when all pass, 503 otherwise |
+
 ## Uploads
 | Method | Path | Body → Response |
 |---|---|---|
 | POST | `/uploads` | `{filename, size, content_type, kind}` → `{asset_id, parts:[{part_number, url}], upload_id}` |
 | POST | `/uploads/{asset_id}/complete` | `{upload_id, parts:[{part_number, etag}]}` → `{asset}` + enqueues proxy |
+| GET | `/assets/{asset_id}` | — → `{asset, url, proxy_url}` (presigned GETs, used by the players) |
 
 ## References & Styles
 | Method | Path | Notes |
 |---|---|---|
 | POST | `/references` | `{url}` or `{asset_id}` → 202, starts the analysis DAG |
+| GET | `/references` | list |
 | GET | `/references/{id}` | status + derived keys |
 | GET | `/style-profiles` | list (library) |
 | POST | `/style-profiles` | `{reference_id, name}` (auto-created on analysis success) or `{blend:[{profile_id, weight}]}` |
@@ -24,13 +31,15 @@ Errors: `{"error": {"code": "INGEST_PRIVATE_VIDEO", "message": "…", "hint": "U
 | Method | Path | Notes |
 |---|---|---|
 | POST | `/projects` | `{style_profile_id, title, brief}` |
-| GET/PATCH | `/projects/{id}` | |
+| GET | `/projects` | list |
+| GET/PATCH/DELETE | `/projects/{id}` | |
 | POST | `/projects/{id}/shoot-plan` | generate → 202 |
 | GET | `/projects/{id}/shoot-plan` | current version |
 | PATCH | `/projects/{id}/shoot-plan` | manual edits (re-validated) |
 | POST | `/projects/{id}/shoot-plan/regenerate` | `{scope, target_id?, instruction?}` → 202 |
 | GET | `/projects/{id}/shoot-plan.pdf` | export |
-| POST | `/projects/{id}/share` | read-only plan link |
+| POST | `/projects/{id}/share` | creates `share_token` → `{url}` |
+| GET | `/share/{token}` | public, read-only plan (no auth, no owner data) |
 
 ## Footage & Assembly
 | Method | Path | Notes |

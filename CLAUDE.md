@@ -87,7 +87,7 @@ Create these Makefile targets in Phase 0 if they don't exist.
 2. **Deterministic first, LLM second.** Anything measurable (cut times, shot lengths, BPM, loudness, word timings, WPM, color stats) is computed by code. The LLM only makes judgment calls: shot classification, narrative beats, hook type, take quality, emphasis words, script writing.
 3. **The renderer is pure.** `render(timeline, assets) -> mp4`. No LLM calls, no network, no randomness. This makes it testable with golden files.
 4. **LLM calls go through `stylecut/llm/client.py` only.** Use tool-use structured output validated by Pydantic. On validation failure, retry once with the error message appended. Log prompt id+version, model, tokens, latency, and cost on every call.
-5. **Jobs are idempotent.** Key each job on `(asset_id, step, step_version)`. Artifacts go to deterministic S3 keys (see ARCHITECTURE.md), so a re-run overwrites cleanly and a cache hit skips the work.
+5. **Jobs are idempotent.** Key each job on `(subject_id, step, step_version)`, where the subject is the asset, project, or timeline the job works on. Artifacts go to deterministic S3 keys (see ARCHITECTURE.md), so a re-run overwrites cleanly and a cache hit skips the work.
 6. **All ffmpeg goes through `stylecut/media/`.** Build commands as argument lists (never shell strings). Snapshot-test the generated commands.
 7. **Work on proxies.** Analysis and preview renders use 540p proxies. Only final renders touch originals.
 8. **Progress is visible.** Every job emits progress events (Redis pub/sub → SSE) with a human-readable step name.

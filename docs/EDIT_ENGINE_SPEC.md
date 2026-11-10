@@ -58,7 +58,7 @@ class AudioClip(BaseModel):
     fade_in_s: float = 0.0; fade_out_s: float = 0.0
 
 class AudioTracks(BaseModel):
-    voice: list[AudioClip]                        # usually mirrors a_roll clips' audio
+    voice: list[AudioClip]                        # from the selected a_roll takes; continues under b-roll cutaways
     music: list[AudioClip]
     sfx: list[AudioClip]
     duck_music_db: float = -12                    # under voice
@@ -75,10 +75,23 @@ class Timeline(BaseModel):
     overlays: list[TimelineOverlay]
     audio: AudioTracks
     color: dict[str, float]                       # ffmpeg eq params
+    allow_gap: bool = False                       # hand-written/test timelines may leave black gaps
     warnings: list[str] = []                      # "Hook is 4.8s; reference is 2.6s"
 ```
 
 **Invariant checks** (`edit/validate.py`, run after every pass and before render): clips sorted, no gaps (unless `allow_gap`), `src_out > src_in`, all asset ids exist, captions inside duration, duration equals the last clip's end.
+
+## Transition vocabulary
+One mapping, applied by the `map_to_plan` pass (profile → timeline) and `render/concat.py` (timeline → ffmpeg):
+
+| `StyleProfile.rules.transitions` | `VideoClip.transition_in` | ffmpeg `xfade` transition |
+|---|---|---|
+| `hard_cut` | `cut` | none (concat) |
+| `fade` | `fade` | `fade` |
+| `whip` | `whip` | `slideleft` (short, 0.15–0.2s) |
+| `zoom` | `zoom` | `zoomin` |
+| — | `slide` | `slideleft` |
+| `glitch` | `cut` + warning | none in v1 |
 
 ## TimelineOps (editor edits)
 `PATCH /timelines/{id}` with a list of ops creates a new version:
@@ -98,7 +111,7 @@ Ops apply in `edit/ops.py`. Re-run `ripple` (re-time downstream clips, captions,
 | 7 | `emphasis` | LLM | `emphasis_picker` chooses words for punch-ins, caption highlight, emoji, and SFX, constrained by `rules.punch_in_every_s` and `sfx_density`. |
 | 8 | `beat_sync` | det | If music: shift cut points to the nearest beat within ±80ms when the shift doesn't land mid-word. Report the achieved `cut_on_beat_pct`. |
 | 9 | `captions` | det | Chunk words per `words_per_chunk` (break on punctuation and pauses > 300ms; never split a number from its unit), apply case and emphasis. |
-| 10 | `audio_plan` | det | Voice clips mirror a_roll. Music: pick a library track by BPM/mood closest to the profile, start on a downbeat, fade out the last 1s. SFX: whoosh on whip transitions, pop on emphasis punch-ins (per density). |
+| 10 | `audio_plan` | det | Voice clips come from the selected a_roll takes, independent of what the video track shows (voice continues under b-roll). Music: pick a library track by BPM/mood closest to the profile, start on a downbeat, fade out the last 1s. SFX: whoosh on whip transitions, pop on emphasis punch-ins (per density). |
 | 11 | `hook_check` | det | Warn if the first beat > 1.5× reference hook length or the first cut lands after 3s. |
 | 12 | `loop_end` | det | If `rules.loop_ending`, trim the tail so the last word flows into the first frame (cut on an incomplete sentence if the script was written for it). |
 
@@ -130,7 +143,7 @@ One pass:
 - Output: H.264 High, yuv420p, 30fps, AAC 192k, `+faststart`.
 
 ### Captions → ASS (`captions.py`)
-- PlayResX=1080, PlayResY=1920. Style from `CaptionStyle` (font, size from preset table, outline=stroke_px, shadow, alignment from `position_y_pct` → MarginV).
+- PlayResX=1080, PlayResY=1920. Style from `CaptionStyle` (font, size from preset table, outline=stroke_px, shadow, alignment from `position_y_pct` (0–1) → `MarginV = round((1 - position_y_pct) × 1920)` with bottom-center alignment).
 - **Word highlight**: for each chunk, emit one Dialogue event per word span. All words in the chunk are drawn, and the active word gets `{\c&HBBGGRR&}` (color), `{\3c}` with box (box), or `{\fscx115\fscy115}` (scale).
 - **Pop animation**: `{\t(0,80,\fscx110\fscy110)\t(80,160,\fscx100\fscy100)}` at chunk start.
 - Emoji: render from a bundled emoji font (Noto Color Emoji; check libass support in your build, else pre-render PNGs and use overlays).

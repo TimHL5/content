@@ -3,14 +3,13 @@
 The StyleProfile is the app's core asset: a reference video's "style DNA" in a form the planner and editor can act on.
 Each field is tagged **[D]** (deterministic: computed by code, LLM must not change it) or **[J]** (judgment: produced by the LLM from evidence).
 
+**Units:** every `*_pct` and `*_ratio` field is a fraction in 0–1 (`Field(ge=0, le=1)`), never 0–100. Times are seconds unless the name ends in `_ms`.
+
 ## Schema (Pydantic, abbreviated)
 
 ```python
 class Stats(BaseModel):
     mean: float; median: float; p10: float; p90: float; min: float; max: float
-
-class Confidence(BaseModel):
-    value: float = Field(ge=0, le=1)   # attach to [J] blocks
 
 class SourceInfo(BaseModel):
     platform: Literal["tiktok","instagram","youtube","upload"]
@@ -25,7 +24,7 @@ class Pacing(BaseModel):                    # all [D]
     cuts_per_5s: list[float]                # pacing curve
     acceleration: Literal["steady","speeds_up","slows_down","bursty"]  # [D] from slope of curve
     max_shot_s: float                       # rule used by pacing pass (= p90, clamped 1.5–6s)
-    cut_on_beat_pct: float | None           # % cuts within ±80ms of a beat
+    cut_on_beat_pct: float | None           # fraction (0–1) of cuts within ±80ms of a beat
 
 class Shot(BaseModel):
     idx: int
@@ -45,7 +44,7 @@ class CaptionStyle(BaseModel):              # [J] from vision, mapped to our pre
     case: Literal["upper","lower","sentence","title"]
     words_per_chunk: tuple[int,int]         # e.g. (1,3)
     lines: Literal[1,2]
-    position_y_pct: float                   # 0=top, 100=bottom (center of caption block)
+    position_y_pct: float                   # 0=top, 1=bottom (center of caption block)
     fill: str; stroke: str | None; stroke_px: int; shadow: bool
     highlight: Literal["none","color","box","scale"]
     highlight_color: str | None
@@ -60,7 +59,7 @@ class Overlay(BaseModel):                   # [J]
 
 class Speech(BaseModel):                    # [D]
     present: bool
-    coverage_pct: float                     # % of runtime with speech
+    coverage_pct: float                     # fraction (0–1) of runtime with speech
     wpm: float
     pause_ms_p50: float; pause_ms_p90: float
     filler_rate: float                      # fillers per 100 words
@@ -95,7 +94,7 @@ class Hook(BaseModel):                      # [J]
     template: str                           # content-agnostic: "Stop doing <common thing> if you want <outcome>"
     visual: str                             # "extreme close-up, text overlay filling top third"
 
-class EditingRules(BaseModel):              # [J] distilled, actionable; consumed by edit passes
+class EditingRules(BaseModel):              # [J] unless tagged [D]; [D] fields are computed by code from the classified shots and never output by the LLM
     punch_in_every_s: float | None          # avg interval between punch-ins
     punch_in_scale: float                   # [D] median detected scale, default 1.15
     zoom_on: list[Literal["emphasis_word","new_point","joke","number"]]
@@ -120,7 +119,7 @@ class StyleProfile(BaseModel):
     hook: Hook
     beats: list[Beat]
     rules: EditingRules
-    confidence: dict[str, float]            # per block: {"captions":0.9,"beats":0.7,…}
+    confidence: dict[str, float]            # 0–1 per [J] block: {"captions":0.9,"beats":0.7,…}
     user_overrides: dict[str, Any] = {}     # JSON-pointer → value; applied on read
 ```
 
@@ -133,7 +132,7 @@ class StyleProfile(BaseModel):
 | punch_in | ORB feature match between last frame of shot N and first frame of shot N+1. Estimated scale 1.05–1.6 with matching inliers counts as a punch-in. |
 | motion_score | Mean Farneback optical-flow magnitude on 4 sampled frame pairs per shot. |
 | BPM / beats | `librosa.beat.beat_track` on the music stem (Demucs if enabled; otherwise full mix with speech regions down-weighted). |
-| cut_on_beat_pct | % of cuts within ±80ms of a beat. |
+| cut_on_beat_pct | Fraction of cuts within ±80ms of a beat. |
 | LUFS | pyloudnorm on the full mix. |
 | speech | faster-whisper `word_timestamps=True`, VAD on. WPM is computed over speech time only. Fillers: {um, uh, like (as filler), you know, so, basically}. |
 | color | Sample 1 frame/sec → LAB means. `eq` derived by mapping deltas from a neutral baseline (document constants in `analysis/color.py`). |
@@ -156,7 +155,7 @@ class StyleProfile(BaseModel):
   "pacing": {"shot_count":19,"shot_len_s":{"mean":1.8,"median":1.6,"p10":0.8,"p90":3.1,"min":0.5,"max":4.0},
              "cuts_per_5s":[4,3,3,2,3,3,4],"acceleration":"steady","max_shot_s":3.1,"cut_on_beat_pct":0.42},
   "captions": {"present":true,"preset":"bold_pop","font_family":"Montserrat ExtraBold","case":"upper",
-               "words_per_chunk":[1,3],"lines":1,"position_y_pct":62,"fill":"#FFFFFF","stroke":"#000000",
+               "words_per_chunk":[1,3],"lines":1,"position_y_pct":0.62,"fill":"#FFFFFF","stroke":"#000000",
                "stroke_px":6,"shadow":true,"highlight":"color","highlight_color":"#FFE600","emoji":"sparse","animation":"pop"},
   "speech": {"present":true,"coverage_pct":0.93,"wpm":192,"pause_ms_p50":120,"pause_ms_p90":260,"filler_rate":0.4,
              "delivery":"energetic","voice_type":"on_camera"},

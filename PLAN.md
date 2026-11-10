@@ -34,7 +34,7 @@ Check boxes as tasks complete. **Current phase: 0**
 - [ ] S3 lifecycle rule: `references/raw/*` expires in 24h.
 - [ ] Web: "New Style" page with URL paste box and drag-and-drop, live job progress, proxy player.
 
-**Done when:** a TikTok URL and an uploaded MP4 both produce a playable proxy within 30s for a 30s clip; failed URLs show a clear message and offer upload.
+**Done when:** a TikTok URL and an uploaded MP4 both produce a playable proxy within 30s for a 30s clip (target <15s, see ARCHITECTURE.md); failed URLs show a clear message and offer upload.
 
 ---
 
@@ -50,7 +50,7 @@ Spec: `docs/STYLE_PROFILE_SPEC.md`
 - [ ] `analysis/color.py`: mean luma, contrast, saturation, warmth (LAB b*) → `color` block + approximate `eq` filter params.
 - [ ] `analysis/vision_llm.py`: contact sheets → Claude vision (prompt `visual_breakdown`) → per-shot type, caption style, overlays, setting, b-roll flag.
 - [ ] `analysis/synthesis.py`: merge all signals → `style_synthesis` prompt → StyleProfile (narrative beats, hook type, editing rules). Deterministic fields are copied from code output, never invented by the LLM.
-- [ ] Celery DAG: `ingest → [scene, audio, speech] → visual → vision_llm → synthesis` with fan-out where possible.
+- [ ] Celery DAG: `ingest → proxy → [scene, audio, speech, color] → visual → vision_llm → synthesis → cleanup` (see ARCHITECTURE.md) with fan-out where possible.
 - [ ] Web: Style Card page with pacing curve chart, shot-length histogram, caption preview (rendered with our bundled fonts), hook/beat timeline, and editable fields (PATCH profile).
 - [ ] `make eval`: run on `eval/*.mp4`, write profiles to `eval/out/`, print a summary table.
 
@@ -148,3 +148,11 @@ Spec: `docs/EDIT_ENGINE_SPEC.md`
 
 ## Decisions log
 <!-- Claude: append one line per non-obvious decision: date — decision — why -->
+- 2026-11-10 — Project root is the repo root; `skills/` is gitignored — matches CLAUDE.md paths; skills are unrelated to StyleCut.
+- 2026-11-10 — Segment cache keyed by project (`renders/{project_id}/segments/`), not timeline — each edit creates a new timeline id, so a per-timeline cache would never hit.
+- 2026-11-10 — Table `reference_videos` instead of `references` — reserved word in Postgres.
+- 2026-11-10 — All `*_pct`/`*_ratio` fields are 0–1 fractions, including `position_y_pct` — the spec mixed 0–1 and 0–100.
+- 2026-11-10 — Added `Timeline.allow_gap`, a single transition mapping table (`glitch` → cut + warning in v1), removed unused `Confidence` model — the specs referenced things that did not exist or disagreed.
+- 2026-11-10 — Job idempotency key generalized to `(subject_id, step, step_version)`, nullable — plan/assemble/render jobs have no asset.
+- 2026-11-10 — Added `projects.share_token`, `GET /share/{token}`, `GET /health`, `GET /assets/{id}`, list endpoints for references/projects, `DELETE /projects/{id}` — needed by UI flows already in PLAN.md.
+- 2026-11-10 — Voice track is built from selected a_roll takes, not mirrored from the video track — required for J-cuts under b-roll.
