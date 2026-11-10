@@ -69,7 +69,7 @@ Spec: `docs/PLAN_MODE_SPEC.md`
 - [x] Shoot-order optimizer: group shots by `setup_id` (location+framing+lighting) so the creator changes setups as rarely as possible.
 - [x] Regenerate a single shot or beat ("give me another hook").
 - [x] Web (mobile-first): Script view, Shot List (edit order), Shoot Checklist (shoot order, tap to check off), and Teleprompter (scrolling at target WPM, mirrored option).
-- [ ] Export the plan as PDF and a shareable read-only link.
+- [x] Export the plan as PDF and a shareable read-only link.
 
 **Done when:** from a profile and a one-line topic, the plan generates in <20s, the script fits the word budget, and the checklist works one-handed on a phone.
 
@@ -198,3 +198,15 @@ Spec: `docs/EDIT_ENGINE_SPEC.md`
 - 2026-11-10 — Charts are single-hue column charts built from plain elements (no chart library): two small single-series charts did not justify a dependency. Beat timeline identity is carried by labels, not a 9-color categorical palette.
 - 2026-11-10 — `make eval` analyzes clips straight from disk (no uploads or job rows) and runs measurements only when no API key is set.
 - 2026-11-10 — New libraries: numpy, opencv-python-headless, scenedetect, librosa, pyloudnorm, soundfile, faster-whisper, onnxruntime (pinned), anthropic, jinja2 — all named in the stack except soundfile (WAV I/O for loudness and Whisper) and jinja2 (prompt templates, per PROMPTS.md).
+- 2026-11-10 — Phase 2 fix: `music_present` also requires real onsets (peak onset strength ≥ 1.0) — on x86 a steady tone scored 0.38 pulse clarity from codec noise and failed CI; found by re-running the suite under x86 emulation.
+- 2026-11-10 — Phase 3: the plan LLM returns a `PlanDraft` with creative fields only; `generate.derive` recomputes estimated durations, record lengths, takes, shoot order and warnings after every change (generation, regeneration, manual edit) — one code path owns the [D] fields.
+- 2026-11-10 — `ShootPlan` gained `warnings` and `PlannedShot.will_be_cut` — a plan that still breaks a rule after the single repair is kept and flagged rather than discarded; `will_be_cut` is the spec's "flag it so" for long a_roll.
+- 2026-11-10 — A repaired plan replaces the first attempt only if it has no more violations — a repair can make things worse.
+- 2026-11-10 — A `tracking` move without a gimbal is downgraded to `handheld` by code, with a note in the direction, instead of being reported as a violation — the plan stays filmable without another LLM round.
+- 2026-11-10 — Regeneration merges in code: a beat's replacement gets fresh ids at the same position; a shot's replacement keeps its id, beat and lines — this is what guarantees "only the targeted part changes". Each regeneration is a new plan version; manual edits update the current version.
+- 2026-11-10 — Shoot order: setups with the most talking shots first, the hook last within its setup, then by script order. Takes: hook 3, must a_roll 2, everything else 1.
+- 2026-11-10 — Hook length is kept absolute when scaling beats to a new duration (clamped 1.5–4s); the other beats share the remainder proportionally.
+- 2026-11-10 — Checklist ticks are stored in the browser (per project and plan version), not on the server — works on set with no connection and needs no schema; see OPEN_QUESTIONS.
+- 2026-11-10 — Share links are an unguessable token on `projects.share_token`; the public endpoints return the plan and title only, and the web page for them has no app navigation.
+- 2026-11-10 — New library: reportlab (PDF export). Pure Python, no system dependencies; tick boxes are drawn as rectangles because the built-in fonts have no reliable empty-box glyph.
+- 2026-11-10 — TS types: fields with defaults are optional in the generated types, so the web code treats list fields as possibly undefined.

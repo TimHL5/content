@@ -46,6 +46,7 @@ class PlannedShot(BaseModel):
     priority: Literal["must","nice"]
     description: str                        # "Close-up of hands signing lease, slow push-in"
     direction: str                          # filming instructions in plain language
+    will_be_cut: bool = False               # a long a_roll the editor will jump-cut; may exceed max_shot_s
     reference_shot_idx: int | None          # which reference shot this mirrors
     alternatives: list[str] = []            # fallback if they can't get it
 
@@ -71,6 +72,7 @@ class ShootPlan(BaseModel):
     shoot_order: list[str]                  # shot ids in SHOOT order
     checklist_notes: list[str]              # "Film the hook last when you're warmed up"
     music_brief: str | None                 # mood + BPM range to pick from library
+    warnings: list[str] = []                # rules still broken after one repair; shown, not fatal
 ```
 
 ## Generation algorithm (`planning/generate.py`)
@@ -78,19 +80,26 @@ class ShootPlan(BaseModel):
    `speech_time = target_duration × profile.speech.coverage_pct`
    `word_budget = round(speech_time × profile.speech.wpm / 60)`
 2. **Beat scaffold**: scale `profile.beats` proportionally to `target_duration`. Keep the hook at its absolute length (clamped 1.5–4s).
-3. **LLM call** (`shoot_plan` prompt, smart model) with: profile (minus raw shot list noise), brief, budget, beat scaffold, constraints.
-4. **Validate & repair** (deterministic checks; on failure re-prompt once with the list of violations):
+3. **LLM call** (`shoot_plan` prompt, smart model) with: profile (minus raw shot list noise), brief, budget, beat scaffold, constraints. The model returns a `PlanDraft` (`planning/drafts.py`): creative fields only. Code fills `est_duration_s`, `record_s`, `takes`, `shoot_order`, `word_budget`, and `target_duration_s`.
+4. **Validate & repair** (deterministic checks; on failure re-prompt once with the list of violations; the repaired plan is kept if it has no more violations than the first, and whatever remains is stored in `warnings`):
    - Script word count within ±10% of budget.
    - Every `must_have` beat has ≥1 `must` shot.
    - Sum of shot durations within ±10% of target.
    - b-roll share of duration within ±0.1 of `profile.rules.broll_ratio`.
    - No shot longer than `profile.pacing.max_shot_s`, unless it's an a_roll that the editor will punch-in/jump-cut (flag it so).
-   - Constraints respected (no face shots if `can_show_face=false`; no gimbal moves if no gimbal → downgrade to handheld/push_in "walk forward slowly").
+   - Constraints respected (no face shots if `can_show_face=false`; no screen shots unless `has_screen_content`; at most `max_setups` setups). A `tracking` move without a gimbal is not a violation: code downgrades it to `handheld` and adds a walk-slowly note.
+   - References resolve: every beat, setup, and script line a shot or line points at exists; ids are unique.
+   - A reference with no speech has a word budget of 0 and expects an empty script.
 5. **Shoot order** (deterministic): group shots by `setup_id`; order setups to minimize changes (a_roll setup first; the hook gets its own extra takes at the end of the a_roll setup); within a setup, order by `line_ids`.
 6. **Takes**: hook ×3, must a_roll ×2, nice ×1, b-roll records `record_s`.
 
 ## Regeneration
 `POST /projects/{id}/shoot-plan/regenerate` with `{scope: "hook"|"beat"|"shot"|"all", target_id?, instruction?}`. Only the targeted part changes. The validator still runs on the full plan.
+
+- `hook` / `beat`: the `shoot_plan_regen` prompt returns replacement lines and shots for that beat. Code swaps them in at the same position with fresh ids; every other line and shot keeps its id and content.
+- `shot`: one replacement shot. It keeps its id, beat, and script lines; how it is filmed changes.
+- `all`: a full new plan.
+- Every regeneration saves a new plan version; earlier versions are kept. Manual edits (`PATCH`) update the current version in place and re-derive takes, record lengths, shoot order, and warnings.
 
 ## Coverage Check (after footage upload)
 For each `PlannedShot`:
@@ -105,6 +114,6 @@ For each `PlannedShot`:
 ## UI (mobile-first)
 - **Script** tab: beats as colored sections; tap a line to edit; word budget meter.
 - **Shots** tab: cards in edit order with framing icon, duration, priority badge, and the matching reference contact-sheet tile ("like this").
-- **Shoot** tab: checklist in shoot order, grouped by setup with setup instructions on top; big tap targets; "Teleprompter" button per a_roll shot.
+- **Shoot** tab: checklist in shoot order, grouped by setup with setup instructions on top; big tap targets; "Teleprompter" button per a_roll shot. Ticks are stored on the device (per project and plan version), so the checklist works on set without a connection.
 - **Teleprompter**: scrolls at `profile.speech.wpm`, adjustable ±20%; mirror toggle; highlights emphasis words; front-camera friendly (text near the top).
 - **Export**: PDF (one page per setup) + share link.

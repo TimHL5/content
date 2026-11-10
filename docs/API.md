@@ -30,16 +30,18 @@ Errors: `{"error": {"code": "INGEST_PRIVATE_VIDEO", "message": "…", "hint": "U
 ## Projects & Plan Mode
 | Method | Path | Notes |
 |---|---|---|
-| POST | `/projects` | `{style_profile_id, title, brief}` |
+| POST | `/projects` | `{style_profile_id, title, brief: ProjectBrief}` → 201 `ProjectOut` (`has_plan`, `plan_job_id`, `style_name`) |
 | GET | `/projects` | list |
 | GET/PATCH/DELETE | `/projects/{id}` | |
 | POST | `/projects/{id}/shoot-plan` | generate → 202 |
-| GET | `/projects/{id}/shoot-plan` | current version |
-| PATCH | `/projects/{id}/shoot-plan` | manual edits (re-validated) |
+| GET | `/projects/{id}/shoot-plan` | current version: `{version, plan: ShootPlan, word_count, style: {name, wpm, max_shot_s, beats}}`; 404 `PLAN_NOT_FOUND` |
+| PATCH | `/projects/{id}/shoot-plan` | manual edits: `{lines?: [{id, text}], shots?: [{id, description?, direction?, duration_s?, priority?}], shot_order?: [ids]}`. Updates the current version in place; a broken rule becomes a `warnings` entry, not an error. |
 | POST | `/projects/{id}/shoot-plan/regenerate` | `{scope, target_id?, instruction?}` → 202 |
 | GET | `/projects/{id}/shoot-plan.pdf` | export |
 | POST | `/projects/{id}/share` | creates `share_token` → `{url}` |
 | GET | `/share/{token}` | public, read-only plan (no auth, no owner data) |
+| GET | `/share/{token}/shoot-plan.pdf` | public PDF of the shared plan |
+| DELETE | `/projects/{id}/share` | revoke the link |
 
 ## Footage & Assembly
 | Method | Path | Notes |

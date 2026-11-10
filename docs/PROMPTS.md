@@ -34,7 +34,7 @@ List recurring on-screen overlays (not captions).
 
 ## `shoot_plan` (v1, smart)
 **Input:** StyleProfile (summary, hook, beats, pacing, speech, rules, captions.present), ProjectBrief, word_budget, scaled beat scaffold, constraints, reference contact-sheet captions for shots.
-**Output:** `ShootPlan` minus `shoot_order` (computed in code).
+**Output:** `PlanDraft {title_options, script: [{id, beat_id, text, emphasis_words, delivery_note}], shots: [...], setups, checklist_notes, music_brief, script_changes}`. Everything code can compute (`est_duration_s`, `record_s`, `takes`, `shoot_order`, budgets) is absent from the draft.
 **Key instructions:**
 ```
 Write a script for "{{brief.topic}}" that follows this structure exactly: {{beat_scaffold}}.
@@ -47,6 +47,10 @@ For b-roll, prefer things the user can film at their listed locations. Give 1–
 Group shots into setups (same location + framing + lighting) and minimize the number of setups.
 Write 3 on-screen title options in the style of the reference's overlays.
 ```
+
+## `shoot_plan_regen` (v1, smart)
+**Input:** topic, delivery, the part being replaced (one beat's lines and shots, or one shot), its beat, the hook pattern, the rest of the plan for context, existing setups, constraints, and the creator's optional instruction.
+**Output:** `PartDraft {script, shots, setups}`: the replacement only. Code merges it so nothing outside the target changes.
 
 ## `coverage_classify` (v1, fast, vision)
 **Input:** contact sheet of one clip (6 frames), its transcript snippet (if any), and candidate shots `[{id, kind, framing, description}]`.
