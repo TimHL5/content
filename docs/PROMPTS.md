@@ -1,7 +1,7 @@
 # Prompt Registry
 
 Each prompt lives in `apps/api/stylecut/llm/prompts/{id}.py` with `ID`, `VERSION`, `MODEL` (`smart`|`fast`), `SYSTEM`, `USER_TEMPLATE` (Jinja2), and `OUTPUT_MODEL`.
-Output is always forced tool use with the Pydantic schema. **Bump VERSION on any change** (it busts the cache and appears in `llm_calls`).
+Output is always structured output constrained to the Pydantic model (`messages.parse`); see ARCHITECTURE.md for why this replaced forced tool use. Output models live in `analysis/judgment.py` and contain judgment fields only. **Bump VERSION on any change** (it busts the cache and appears in `llm_calls`).
 
 Shared system preamble (prepend to all):
 > You are part of StyleCut, a video-editing system. You analyze and plan short-form vertical video. Measured values given to you are ground truth: never change or re-estimate them. Describe style, structure, and technique, never reproduce the reference's specific words beyond short templates. When evidence is weak, choose the most conservative option and lower the confidence.
@@ -25,7 +25,7 @@ List recurring on-screen overlays (not captions).
 
 ## `style_synthesis` (v1, smart)
 **Input:** deterministic JSON (pacing, speech, audio, color), transcript with timestamps, VisualBreakdown.
-**Output:** `{summary, hook: Hook, beats: [Beat], rules: EditingRules (judgment fields only), audio_judgment: {sfx_density, sfx_types, music_mood}, speech_judgment: {delivery, voice_type}, color_look, confidence}`
+**Output:** `SynthesisOut {summary, hook: {type, template, visual}, beats: [{id, function, start_s, end_s, technique, must_have}], rules: {zoom_on, jump_cut_silences, transitions, loop_ending, text_card_usage}, audio_judgment: {sfx_density, sfx_types, music_mood}, speech_judgment: {delivery, voice_type}, color_look, confidence}`. Code then snaps beat edges to cuts, assigns `Shot.beat_id`, and fills `hook.duration_s`, `rules.punch_in_every_s`, `rules.punch_in_scale`, and `rules.broll_ratio`.
 **Key instructions:**
 - Identify the narrative beats with time ranges that align to shot boundaries.
 - `hook.template` must be a fill-in-the-blank pattern with `<placeholders>`, ≤ 15 words, not the original sentence.

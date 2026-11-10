@@ -52,7 +52,7 @@ Spec: `docs/STYLE_PROFILE_SPEC.md`
 - [x] `analysis/synthesis.py`: merge all signals → `style_synthesis` prompt → StyleProfile (narrative beats, hook type, editing rules). Deterministic fields are copied from code output, never invented by the LLM.
 - [x] Celery DAG: `ingest → proxy → [scene, audio, speech, color] → visual → vision_llm → synthesis → cleanup` (see ARCHITECTURE.md) with fan-out where possible.
 - [x] Web: Style Card page with pacing curve chart, shot-length histogram, caption preview (rendered with our bundled fonts), hook/beat timeline, and editable fields (PATCH profile).
-- [ ] `make eval`: run on `eval/*.mp4`, write profiles to `eval/out/`, print a summary table.
+- [x] `make eval`: run on `eval/*.mp4`, write profiles to `eval/out/`, print a summary table.
 
 **Done when:** 8/10 eval clips produce profiles you judge as accurate on pacing, caption style, and hook type; analysis of a 30s clip finishes in <90s on a GPU worker.
 
@@ -181,3 +181,20 @@ Spec: `docs/EDIT_ENGINE_SPEC.md`
 - 2026-11-10 — `reference_videos.error` is JSONB `{code, message, hint}`; job errors show an exception's `user_message` when it has one — users see "That video is private." rather than an exception name. Raw downloader text goes to logs only.
 - 2026-11-10 — New library: yt-dlp (named in the stack), imported only inside the provider so API processes don't load it.
 - 2026-11-10 — ruff E501 is ignored under `tests/` — parametrize tables of URLs and error strings are clearer on one line.
+- 2026-11-10 — Phase 2: LLM calls use structured outputs (`messages.parse` with the Pydantic model), not a forced tool call — `claude-sonnet-5-5` rejects forced tool choice with a 400. CLAUDE.md rule 4, ARCHITECTURE.md and PROMPTS.md updated.
+- 2026-11-10 — LLM output models (`analysis/judgment.py`) contain judgment fields only; `assemble_profile` copies every measured value from code — makes "the LLM must not change [D] fields" structural rather than a prompt instruction. A test asserts no measured field name exists in those models.
+- 2026-11-10 — `Shot.beat_id`, `Hook.duration_s` and `rules.punch_in_every_s` are computed by code (beat ranges, punch-in count), not asked of the LLM — they are derivable, so deterministic-first applies. Spec tags changed from [J] to [D].
+- 2026-11-10 — Vision and synthesis orchestration both live in `analysis/synthesis.py` (PLAN named a separate `analysis/vision_llm.py`) — the two calls share inputs and helpers.
+- 2026-11-10 — Pipelines gained parallel groups (`start_pipeline` accepts a list of stages as one entry); the parent row is locked (`FOR UPDATE`) while a child rolls up, so exactly one child advances the pipeline. Chosen over Celery chords to keep one job id, DB-visible state, and idempotent restarts.
+- 2026-11-10 — Later stages read earlier artifacts from deterministic S3 keys (`references/derived/{asset_id}/…`), not Celery results — stages can run on different workers and a re-run overwrites cleanly. `reference.derived` is written once, by the last analysis stage, to avoid concurrent JSONB updates.
+- 2026-11-10 — `cleanup_reference_media` deletes raw, proxy and speech WAV as soon as the profile exists; the 24h lifecycle rule remains the backstop. It only runs on success, so a failed analysis (for example no API key) can be retried without re-uploading.
+- 2026-11-10 — Without `ANTHROPIC_API_KEY` analysis fails at the vision stage with `LLM_NOT_CONFIGURED` and a hint, rather than producing a profile with placeholder judgment — a partial profile would look real.
+- 2026-11-10 — Profile edits are stored as JSON-pointer overrides in `data.user_overrides` and applied on read; the analyzed values stay underneath and a null override restores them. Identity fields (`/id`, `/source`, …) cannot be overridden.
+- 2026-11-10 — Audio: hop 256 and BPM from the median inter-beat interval (hop 512 read a 120 BPM click as 117.5); `music_present` from pulse clarity ≥ 0.25. Beat tracking runs on the full mix; Demucs is not wired in.
+- 2026-11-10 — Whisper is given WAV samples read with soundfile instead of a file path — faster-whisper's PyAV decoder failed against the installed PyAV. Model weights are cached in the `model_cache` volume.
+- 2026-11-10 — Fixture color order changed (orange→black→cyan): a hue-only change scores under ContentDetector's threshold of 27 and was missed. Real footage rarely has hue-only cuts, but the fixture must be unambiguous.
+- 2026-11-10 — Pins for the dev machine: `opencv-python-headless<5`, `onnxruntime<1.23`, `NUMBA_CPU_NAME=generic` — newer builds die with SIGILL on linux/arm64 under Docker Desktop (it advertises SVE2 it cannot execute).
+- 2026-11-10 — Caption preview fonts come from `next/font/google` (the same five OFL families the renderer will bundle in Phase 4) — self-hosted at build time, no runtime request to Google.
+- 2026-11-10 — Charts are single-hue column charts built from plain elements (no chart library): two small single-series charts did not justify a dependency. Beat timeline identity is carried by labels, not a 9-color categorical palette.
+- 2026-11-10 — `make eval` analyzes clips straight from disk (no uploads or job rows) and runs measurements only when no API key is set.
+- 2026-11-10 — New libraries: numpy, opencv-python-headless, scenedetect, librosa, pyloudnorm, soundfile, faster-whisper, onnxruntime (pinned), anthropic, jinja2 — all named in the stack except soundfile (WAV I/O for loudness and Whisper) and jinja2 (prompt templates, per PROMPTS.md).

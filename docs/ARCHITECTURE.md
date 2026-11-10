@@ -60,11 +60,11 @@ ingest_reference (io)
                                           ▼
                         synthesize_profile (llm)
                                           ▼
-                     cleanup_reference_media (io)  [schedules deletion]
+                     cleanup_reference_media (io)  [deletes raw, proxy, speech wav now; lifecycle rule is the backstop]
 ```
 Each task writes its artifact to S3 and a row in `jobs`. The parent job's progress is the weighted sum of its children.
 
-**Pipelines** (`jobs/base.py::start_pipeline`): one parent `jobs` row, which is the id the client follows over SSE, plus one child row per stage. The parent runs no code; each stage is sent when the previous one succeeds, and a failed stage fails the parent. Phase 1 ships sequential stages (`io.ingest_reference → cpu.make_proxy`); the Phase 2 fan-out extends a stage to a group of tasks (Celery `group`/`chord` or the same DB-driven hand-off).
+**Pipelines** (`jobs/base.py::start_pipeline`): one parent `jobs` row, which is the id the client follows over SSE, plus one child row per stage. The parent runs no code; each stage is sent when the previous one succeeds, and a failed stage fails the parent. An entry in the stage list is either one `(task, weight)` or a list of them that runs in parallel; the next entry starts when every job in the previous one has succeeded. The parent row is locked while a child rolls its state up, so exactly one child advances the pipeline. The reference pipeline is defined in `jobs/reference_pipeline.py`.
 
 ### Footage processing (per uploaded clip, in parallel)
 ```
@@ -109,7 +109,9 @@ Published on Redis channel `job:{id}`:
 
 ## LLM layer (`stylecut/llm/`)
 - `client.py`: `call_structured(prompt_id, inputs, output_model, model=…, images=[…]) -> output_model`
-  - Renders the prompt from the registry, defines a single tool whose `input_schema` is `output_model.model_json_schema()`, and forces tool use.
+  - Renders the prompt from the registry and requests structured output constrained to `output_model` (`client.messages.parse(output_format=output_model)`). The current models reject forced tool choice, so this replaces the single-forced-tool approach; the guarantee (schema-valid output) is the same.
+  - Output models hold judgment fields only (`analysis/judgment.py`), without numeric or length constraints, which structured outputs do not enforce; code clamps and normalizes.
+  - Maps `stop_reason` `refusal` and `max_tokens`, and API errors, to user-facing `LlmError` codes. Failures are never cached.
   - Validates with Pydantic and retries once with the validation errors.
   - Logs to `llm_calls` (prompt_id, version, model, input/output tokens, latency_ms, cost_usd, job_id).
 - `prompts/`: one file per prompt with `ID`, `VERSION`, `SYSTEM`, `USER_TEMPLATE` (see PROMPTS.md).

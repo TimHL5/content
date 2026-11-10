@@ -22,9 +22,9 @@ Errors: `{"error": {"code": "INGEST_PRIVATE_VIDEO", "message": "…", "hint": "U
 | GET | `/references` | list |
 | GET | `/references/{id}` | `{id, status, platform, source_url, asset_id, job_id, error}`. `status`: `queued` → `ingesting` → `ingested` → `analyzing` → `ready`, or `failed` with `error: {code, message, hint}` (`INGEST_PRIVATE_VIDEO`, `INGEST_LOGIN_REQUIRED`, `INGEST_REMOVED`, `INGEST_REGION_LOCKED`, `INGEST_TOO_LONG`, `INGEST_TOO_LARGE`, `INGEST_NOT_A_VIDEO`, `INGEST_FAILED`). |
 | GET | `/style-profiles` | list (library) |
-| POST | `/style-profiles` | `{reference_id, name}` (auto-created on analysis success) or `{blend:[{profile_id, weight}]}` |
+| POST | `/style-profiles` | Not implemented yet: a profile is created automatically when analysis succeeds (`GET /references/{id}` → `style_profile_id`). `{blend:[{profile_id, weight}]}` arrives in Phase 7. |
 | GET | `/style-profiles/{id}` | profile with overrides applied + contact-sheet URLs |
-| PATCH | `/style-profiles/{id}` | `{overrides: {"/captions/highlight_color": "#00FF88"}}` |
+| PATCH | `/style-profiles/{id}` | `{name?, overrides?: {"/captions/highlight_color": "#00FF88"}}`. Overrides are JSON pointers to existing fields, merged with earlier ones and validated against the schema before saving; a `null` value removes that override. `/id`, `/schema_version`, `/source`, `/user_overrides` are protected. Errors: `OVERRIDE_INVALID_PATH`, `OVERRIDE_INVALID_VALUE`, `OVERRIDE_PROTECTED` (422). |
 | DELETE | `/style-profiles/{id}` | |
 
 ## Projects & Plan Mode

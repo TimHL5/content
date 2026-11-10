@@ -35,8 +35,8 @@ types: .env ## pydantic -> JSON Schema -> TS (packages/schemas/generated)
 fixtures: .env ## synthetic test clips via ffmpeg lavfi
 	$(API) python -m scripts.make_fixtures
 
-eval: ## analysis over eval/ clips (lands in Phase 2)
-	@echo "make eval is implemented in Phase 2 (needs the analysis pipeline)."
+eval: .env ## analyze every clip in eval/, write profiles to eval/out/, print a summary
+	$(API) python -m scripts.run_eval $(ARGS)
 
 lock: ## refresh uv.lock and pnpm-lock.yaml
 	$(API) uv lock

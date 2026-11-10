@@ -35,7 +35,7 @@ class Shot(BaseModel):
     punch_in: bool                          # [D] detected scale jump vs previous shot
     motion_score: float                     # [D]
     description: str                        # [J] short, content-agnostic ("person at desk speaking to camera")
-    beat_id: str | None                     # [J] link to narrative beat
+    beat_id: str | None                     # [D] the beat whose time range contains the shot's midpoint
 
 class CaptionStyle(BaseModel):              # [J] from vision, mapped to our presets
     present: bool
@@ -90,12 +90,12 @@ class Beat(BaseModel):                      # [J]
 
 class Hook(BaseModel):                      # [J]
     type: Literal["bold_claim","question","pov","list_tease","result_first","controversy","visual_shock","story_open","challenge"]
-    duration_s: float
+    duration_s: float                       # [D] length of the hook beat
     template: str                           # content-agnostic: "Stop doing <common thing> if you want <outcome>"
     visual: str                             # "extreme close-up, text overlay filling top third"
 
 class EditingRules(BaseModel):              # [J] unless tagged [D]; [D] fields are computed by code from the classified shots and never output by the LLM
-    punch_in_every_s: float | None          # avg interval between punch-ins
+    punch_in_every_s: float | None          # [D] duration / number of detected punch-ins
     punch_in_scale: float                   # [D] median detected scale, default 1.15
     zoom_on: list[Literal["emphasis_word","new_point","joke","number"]]
     broll_ratio: float                      # [D] share of runtime that is b_roll/screen/product
@@ -131,17 +131,19 @@ class StyleProfile(BaseModel):
 | pacing curve | Count cuts per 5s window. `acceleration` = sign of linear-fit slope (±0.15 threshold) or "bursty" if CV > 0.6. |
 | punch_in | ORB feature match between last frame of shot N and first frame of shot N+1. Estimated scale 1.05–1.6 with matching inliers counts as a punch-in. |
 | motion_score | Mean Farneback optical-flow magnitude on 4 sampled frame pairs per shot. |
-| BPM / beats | `librosa.beat.beat_track` on the music stem (Demucs if enabled; otherwise full mix with speech regions down-weighted). |
+| BPM / beats | `librosa.beat.beat_track` on the full mix (hop 256 at 22.05 kHz); BPM is 60 / median inter-beat interval. Demucs stem separation is still optional and not yet wired in. |
+| music_present | Pulse clarity: normalized autocorrelation of the onset envelope at one beat period, ≥ 0.25 (measured: click track 0.97, steady tone −0.01, speech-only clip 0.01). When false, `bpm`, `cut_on_beat_pct`, and `music_mood` are null. |
 | cut_on_beat_pct | Fraction of cuts within ±80ms of a beat. |
 | LUFS | pyloudnorm on the full mix. |
-| speech | faster-whisper `word_timestamps=True`, VAD on. WPM is computed over speech time only. Fillers: {um, uh, like (as filler), you know, so, basically}. |
+| speech | faster-whisper `word_timestamps=True`, VAD on. Speech time = word durations plus gaps ≤ 0.7s; WPM is computed over speech time only and `coverage_pct` = speech time / duration. `like`/`so` count as fillers only when set off by a comma or pause. Fillers: {um, uh, like (as filler), you know, so, basically}. |
 | color | Sample 1 frame/sec → LAB means. `eq` derived by mapping deltas from a neutral baseline (document constants in `analysis/color.py`). |
 | captions, shot kind, overlays | Contact sheets → `visual_breakdown` prompt. Fonts are mapped to the nearest bundled preset; we never claim an exact font. |
 | hook, beats, rules, summary | `style_synthesis` prompt over all deterministic JSON + transcript + vision output. |
 
 ## Contact sheets
 - 2 frames per shot (25% and 75% of shot duration), max 48 frames.
-- 3×4 grid, each tile 360px tall, with a label `#shot_idx  t=12.4s` burned in.
+- Up to 3×4 tiles per sheet (the sheet is sized to the tiles it holds), each tile 360px tall, with a label `#shot_idx t=12.4s` burned in.
+- More than 24 shots: one frame per shot (50%). More than 48: an even sample of 48 shots; unsampled shots get kind `other`.
 - Send all sheets in one vision call when possible (≤ 4 sheets).
 
 ## Example (truncated)
