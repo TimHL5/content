@@ -43,7 +43,7 @@ Check boxes as tasks complete. **Current phase: 2**
 Spec: `docs/STYLE_PROFILE_SPEC.md`
 
 - [x] Pydantic `StyleProfile` v1 + `make types`.
-- [ ] `analysis/scene.py`: PySceneDetect (ContentDetector, AdaptiveDetector fallback) → cuts, shot durations, stats, and pacing curve (cuts per 5s window). Unit test against `vertical_hardcuts_15s.mp4` (±1 frame).
+- [x] `analysis/scene.py`: PySceneDetect (ContentDetector, AdaptiveDetector fallback) → cuts, shot durations, stats, and pacing curve (cuts per 5s window). Unit test against `vertical_hardcuts_15s.mp4` (±1 frame).
 - [ ] `analysis/audio.py`: loudness (pyloudnorm), BPM and beat grid (librosa), onset peaks, cut-to-beat alignment %. Test with the click track.
 - [ ] `analysis/speech.py`: faster-whisper with word timestamps → transcript, WPM, pause distribution, filler rate, speech coverage %.
 - [ ] `analysis/visual.py`: pick 2 frames/shot (max 48) → build 3×4 contact sheets with burned-in timestamps and shot ids. Optical-flow motion score per shot. Punch-in detection (scale change between consecutive shots with the same subject).

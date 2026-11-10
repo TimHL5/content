@@ -13,10 +13,11 @@ SAMPLE_RATE = 48000
 # vertical_hardcuts_15s.mp4: hard cuts at these times (seconds, frame-aligned at 30fps).
 HARDCUT_TIMES_S: tuple[float, ...] = (1.0, 2.5, 3.5, 5.0, 7.0, 8.0, 9.5, 11.0, 12.0, 14.0)
 HARDCUT_DURATION_S = 15.0
-# Adjacent cards differ strongly in hue and brightness so content detectors fire on every cut.
+# Adjacent cards differ in brightness or saturation, not only hue: a hue-only change
+# (orange -> cyan) scores below ContentDetector's threshold of 27 and is missed.
 HARDCUT_COLORS: tuple[str, ...] = (
     "red", "blue", "yellow", "green", "magenta", "white",
-    "navy", "orange", "cyan", "black", "purple",
+    "navy", "orange", "black", "cyan", "purple",
 )  # fmt: skip
 
 # music_120bpm_20s.wav: one click every 0.5s starting at t=0.
