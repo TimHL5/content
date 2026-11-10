@@ -132,7 +132,7 @@ class StyleProfile(BaseModel):
 | punch_in | ORB feature match between last frame of shot N and first frame of shot N+1. Estimated scale 1.05–1.6 with matching inliers counts as a punch-in. |
 | motion_score | Mean Farneback optical-flow magnitude on 4 sampled frame pairs per shot. |
 | BPM / beats | `librosa.beat.beat_track` on the full mix (hop 256 at 22.05 kHz); BPM is 60 / median inter-beat interval. Demucs stem separation is still optional and not yet wired in. |
-| music_present | Pulse clarity: normalized autocorrelation of the onset envelope at one beat period, ≥ 0.25 (measured: click track 0.97, steady tone −0.01, speech-only clip 0.01). When false, `bpm`, `cut_on_beat_pct`, and `music_mood` are null. |
+| music_present | Pulse clarity: normalized autocorrelation of the onset envelope at one beat period, ≥ 0.25, and only when the audio has real onsets (peak onset strength ≥ 1.0; a steady tone has none and would otherwise score on codec noise). Measured clarity: click track 0.97, speech-only clip 0.01. When false, `bpm`, `cut_on_beat_pct`, and `music_mood` are null. |
 | cut_on_beat_pct | Fraction of cuts within ±80ms of a beat. |
 | LUFS | pyloudnorm on the full mix. |
 | speech | faster-whisper `word_timestamps=True`, VAD on. Speech time = word durations plus gaps ≤ 0.7s; WPM is computed over speech time only and `coverage_pct` = speech time / duration. `like`/`so` count as fillers only when set off by a comma or pause. Fillers: {um, uh, like (as filler), you know, so, basically}. |

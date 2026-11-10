@@ -17,6 +17,10 @@ SILENCE_LUFS = -70.0
 # beat period. Speech alone stays well under this; music and click tracks sit well above.
 # Measured: click track 0.97, steady tone -0.01, speech-only clip 0.01.
 PULSE_CLARITY_MUSIC = 0.25
+# A pulse needs onsets. With none (a steady tone, room noise) the envelope is codec noise and
+# its autocorrelation is meaningless: on x86 a pure tone scored 0.38. Measured peak onset
+# strength: steady tone 0.13, speech 9.2, click track 18.8.
+MIN_ONSET_PEAK = 1.0
 DROP_SIGMA = 2.5  # onset strength this many std devs above the mean is a "drop"
 DROP_MIN_GAP_S = 0.5
 
@@ -116,7 +120,8 @@ def analyze_audio(path: Path) -> AudioResult:
         if len(beats) > 1
         else float(np.atleast_1d(tempo)[0])
     )
-    clarity = _pulse_clarity(onset_env, sr, bpm)
+    has_onsets = float(onset_env.max()) >= MIN_ONSET_PEAK
+    clarity = _pulse_clarity(onset_env, sr, bpm) if has_onsets else 0.0
     music = clarity >= PULSE_CLARITY_MUSIC and len(beats) >= 4
 
     onset_frames = librosa.onset.onset_detect(onset_envelope=onset_env, sr=sr, hop_length=HOP)
