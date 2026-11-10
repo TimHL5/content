@@ -1,0 +1,97 @@
+"""SQLAlchemy models (docs/DATA_MODEL.md). Phase 0: users, assets, jobs."""
+
+from datetime import datetime
+from typing import Any
+from uuid import UUID
+
+from sqlalchemy import (
+    Boolean,
+    CheckConstraint,
+    DateTime,
+    Float,
+    ForeignKey,
+    Index,
+    Integer,
+    String,
+    Text,
+    text,
+)
+from sqlalchemy.dialects.postgresql import JSONB
+from sqlalchemy.dialects.postgresql import UUID as PGUUID
+from sqlalchemy.orm import Mapped, mapped_column
+
+from stylecut.db.base import Base
+
+ASSET_KINDS = ("reference", "footage", "music", "sfx", "render", "image")
+ASSET_STATUSES = ("uploading", "ready", "failed", "expired")
+JOB_STATUSES = ("queued", "running", "succeeded", "failed")
+
+
+def _in(column: str, values: tuple[str, ...]) -> str:
+    return f"{column} IN ({', '.join(repr(v) for v in values)})"
+
+
+class User(Base):
+    __tablename__ = "users"
+
+    email: Mapped[str] = mapped_column(String(320), unique=True, nullable=False)
+    name: Mapped[str | None] = mapped_column(String(200))
+    plan: Mapped[str] = mapped_column(String(32), nullable=False, server_default="free")
+
+
+class Asset(Base):
+    """Every media file."""
+
+    __tablename__ = "assets"
+    __table_args__ = (
+        CheckConstraint(_in("kind", ASSET_KINDS), name="ck_assets_kind"),
+        CheckConstraint(_in("status", ASSET_STATUSES), name="ck_assets_status"),
+        Index("ix_assets_owner_kind", "owner_id", "kind"),
+        Index("ix_assets_expires_ready", "expires_at", postgresql_where=text("status = 'ready'")),
+    )
+
+    owner_id: Mapped[UUID] = mapped_column(
+        PGUUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False
+    )
+    kind: Mapped[str] = mapped_column(String(16), nullable=False)
+    s3_key: Mapped[str] = mapped_column(Text, nullable=False)
+    proxy_key: Mapped[str | None] = mapped_column(Text)
+    content_hash: Mapped[str | None] = mapped_column(String(64))
+    duration_s: Mapped[float | None] = mapped_column(Float)
+    width: Mapped[int | None] = mapped_column(Integer)
+    height: Mapped[int | None] = mapped_column(Integer)
+    fps: Mapped[float | None] = mapped_column(Float)
+    has_audio: Mapped[bool | None] = mapped_column(Boolean)
+    status: Mapped[str] = mapped_column(String(16), nullable=False, server_default="uploading")
+    expires_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    meta: Mapped[dict[str, Any]] = mapped_column(
+        JSONB, nullable=False, server_default=text("'{}'::jsonb")
+    )
+
+
+class Job(Base):
+    __tablename__ = "jobs"
+    __table_args__ = (
+        CheckConstraint(_in("status", JOB_STATUSES), name="ck_jobs_status"),
+        CheckConstraint("progress >= 0 AND progress <= 1", name="ck_jobs_progress"),
+        Index("ix_jobs_parent_id", "parent_id"),
+    )
+
+    owner_id: Mapped[UUID] = mapped_column(
+        PGUUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False
+    )
+    type: Mapped[str] = mapped_column(String(64), nullable=False)
+    status: Mapped[str] = mapped_column(String(16), nullable=False, server_default="queued")
+    progress: Mapped[float] = mapped_column(Float, nullable=False, server_default="0")
+    step: Mapped[str | None] = mapped_column(Text)
+    input: Mapped[dict[str, Any]] = mapped_column(
+        JSONB, nullable=False, server_default=text("'{}'::jsonb")
+    )
+    output: Mapped[dict[str, Any] | None] = mapped_column(JSONB)
+    error: Mapped[str | None] = mapped_column(Text)
+    attempts: Mapped[int] = mapped_column(Integer, nullable=False, server_default="0")
+    # `{subject_id}:{step}:{step_version}`; NULL for jobs that must always run.
+    idempotency_key: Mapped[str | None] = mapped_column(Text, unique=True)
+    parent_id: Mapped[UUID | None] = mapped_column(
+        PGUUID(as_uuid=True), ForeignKey("jobs.id", ondelete="CASCADE")
+    )
