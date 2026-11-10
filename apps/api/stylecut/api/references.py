@@ -9,11 +9,11 @@ from sqlalchemy.orm import Session
 from stylecut.api.deps import current_user_id
 from stylecut.api.errors import ApiError, not_found
 from stylecut.api.uploads import owned_asset
-from stylecut.db.models import Asset, Job, ReferenceVideo
+from stylecut.db.models import Asset, Job, ReferenceVideo, StyleProfileRow
 from stylecut.db.session import get_db
 from stylecut.ingest.errors import IngestError
 from stylecut.ingest.urls import normalize_url
-from stylecut.jobs.ingest import pipeline_key, start_reference_ingest
+from stylecut.jobs.reference_pipeline import pipeline_key, start_reference_pipeline
 from stylecut.schemas.jobs import JobAccepted
 from stylecut.schemas.media import ReferenceCreateIn, ReferenceOut
 from stylecut.settings import get_settings
@@ -24,6 +24,12 @@ router = APIRouter(tags=["references"])
 
 def _reference_out(session: Session, reference: ReferenceVideo) -> ReferenceOut:
     job_id = session.scalar(select(Job.id).where(Job.idempotency_key == pipeline_key(reference.id)))
+    profile_id = session.scalar(
+        select(StyleProfileRow.id)
+        .where(StyleProfileRow.source_reference_ids.contains([reference.id]))
+        .order_by(StyleProfileRow.created_at.desc())
+        .limit(1)
+    )
     return ReferenceOut.model_validate(
         {
             "id": reference.id,
@@ -32,6 +38,7 @@ def _reference_out(session: Session, reference: ReferenceVideo) -> ReferenceOut:
             "source_url": reference.source_url,
             "asset_id": reference.asset_id,
             "job_id": job_id,
+            "style_profile_id": profile_id,
             "error": reference.error,
             "created_at": reference.created_at,
         }
@@ -74,7 +81,7 @@ def create_reference(
 
     db.add(reference)
     db.commit()
-    job = start_reference_ingest(db, reference)
+    job = start_reference_pipeline(db, reference)
     return JobAccepted(job_id=job.id, resource_id=reference.id)
 
 

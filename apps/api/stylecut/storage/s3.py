@@ -116,3 +116,28 @@ def complete_multipart_upload(key: str, upload_id: str, parts: list[tuple[int, s
 
 def abort_multipart_upload(key: str, upload_id: str) -> None:
     get_s3_client().abort_multipart_upload(Bucket=_bucket(), Key=key, UploadId=upload_id)
+
+
+def put_bytes(key: str, data: bytes, content_type: str) -> None:
+    get_s3_client().put_object(Bucket=_bucket(), Key=key, Body=data, ContentType=content_type)
+
+
+def get_bytes(key: str) -> bytes:
+    try:
+        body: bytes = get_s3_client().get_object(Bucket=_bucket(), Key=key)["Body"].read()
+    except ClientError as exc:
+        if _is_missing(exc):
+            raise ObjectNotFound(key) from None
+        raise
+    return body
+
+
+def put_json(key: str, payload: str) -> None:
+    put_bytes(key, payload.encode(), "application/json")
+
+
+def delete_objects(keys: list[str]) -> None:
+    if keys:
+        get_s3_client().delete_objects(
+            Bucket=_bucket(), Delete={"Objects": [{"Key": k} for k in keys], "Quiet": True}
+        )

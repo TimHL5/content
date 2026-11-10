@@ -14,6 +14,7 @@ from stylecut.db.models import Asset, Job, ReferenceVideo
 from stylecut.ingest.base import LocalFile, SourceMeta
 from stylecut.ingest.errors import IngestError
 from stylecut.jobs import ingest as ingest_jobs
+from stylecut.jobs import reference_pipeline
 from stylecut.jobs.events import channel
 from stylecut.media.probe import probe
 from stylecut.redis_client import get_redis
@@ -21,6 +22,16 @@ from stylecut.settings import get_settings
 from stylecut.storage import keys, s3
 
 API = "/api/v1"
+
+
+@pytest.fixture(autouse=True)
+def _ingest_and_proxy_only(monkeypatch: pytest.MonkeyPatch) -> None:
+    """These tests cover Phase 1. The analysis stages have their own suite."""
+    monkeypatch.setattr(
+        reference_pipeline,
+        "reference_stages",
+        lambda: [(ingest_jobs.ingest_reference, 0.5), (ingest_jobs.make_proxy, 0.5)],
+    )
 
 
 def _put(url: str, data: bytes) -> str:
@@ -226,7 +237,7 @@ def test_uploaded_reference_becomes_a_playable_proxy(
     assert res.status_code == 202, res.text
     job, reference, asset = _follow(db, res.json())
 
-    assert (job.type, job.status, job.progress) == ("reference.ingest", "succeeded", 1.0)
+    assert (job.type, job.status, job.progress) == ("reference.analyze", "succeeded", 1.0)
     assert (reference.status, reference.platform, reference.error) == ("ingested", "upload", None)
     assert (asset.width, asset.height, asset.fps, asset.has_audio) == (540, 960, 30.0, True)
     assert asset.duration_s == pytest.approx(10.0, abs=0.1)

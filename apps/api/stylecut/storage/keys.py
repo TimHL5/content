@@ -6,7 +6,7 @@ A re-run of any job writes to the same key, so it overwrites cleanly.
 from typing import Literal
 from uuid import UUID
 
-DerivedArtifact = Literal["scenes", "audio", "transcript", "color"]
+DerivedArtifact = Literal["scenes", "audio", "transcript", "color", "visual", "vision"]
 RenderPreset = Literal["preview", "final"]
 
 # Everything under these prefixes expires after 24h (S3 lifecycle rule, Phase 1).

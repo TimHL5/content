@@ -50,7 +50,7 @@ Spec: `docs/STYLE_PROFILE_SPEC.md`
 - [x] `analysis/color.py`: mean luma, contrast, saturation, warmth (LAB b*) → `color` block + approximate `eq` filter params.
 - [x] `analysis/vision_llm.py`: contact sheets → Claude vision (prompt `visual_breakdown`) → per-shot type, caption style, overlays, setting, b-roll flag.
 - [x] `analysis/synthesis.py`: merge all signals → `style_synthesis` prompt → StyleProfile (narrative beats, hook type, editing rules). Deterministic fields are copied from code output, never invented by the LLM.
-- [ ] Celery DAG: `ingest → proxy → [scene, audio, speech, color] → visual → vision_llm → synthesis → cleanup` (see ARCHITECTURE.md) with fan-out where possible.
+- [x] Celery DAG: `ingest → proxy → [scene, audio, speech, color] → visual → vision_llm → synthesis → cleanup` (see ARCHITECTURE.md) with fan-out where possible.
 - [ ] Web: Style Card page with pacing curve chart, shot-length histogram, caption preview (rendered with our bundled fonts), hook/beat timeline, and editable fields (PATCH profile).
 - [ ] `make eval`: run on `eval/*.mp4`, write profiles to `eval/out/`, print a summary table.
 

@@ -23,7 +23,8 @@ class ApiError(Exception):
 
 
 def not_found(resource: str) -> ApiError:
-    return ApiError(404, f"{resource.upper()}_NOT_FOUND", f"{resource.capitalize()} not found.")
+    code = resource.upper().replace(" ", "_")
+    return ApiError(404, f"{code}_NOT_FOUND", f"{resource.capitalize()} not found.")
 
 
 def _envelope(status_code: int, code: str, message: str, hint: str | None = None) -> JSONResponse:

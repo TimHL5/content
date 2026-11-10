@@ -32,6 +32,7 @@ from stylecut.db.session import get_sessionmaker
 from stylecut.jobs.events import event_from_job, publish
 
 MAX_ERROR_CHARS = 2000
+STARTING = "Starting"
 # Skip progress writes smaller than this (downloaders report thousands of times).
 MIN_PROGRESS_DELTA = 0.02
 
@@ -72,7 +73,7 @@ class JobContext:
         self.job.progress = 0.0
         self.job.error = None
         self.job.output = None
-        self.job.step = "Starting"
+        self.job.step = STARTING
         self._commit_and_publish()
 
     def _succeed(self, output: dict[str, Any]) -> None:
@@ -94,37 +95,71 @@ class JobContext:
             self._sync_parent(eta_s)
 
     def _sync_parent(self, eta_s: float | None) -> None:
-        parent = self.session.get(Job, self.job.parent_id)
+        """Roll this child's state up into its pipeline parent, and start the next
+        group once every job in this one has succeeded.
+
+        The parent row is locked for the update: jobs in a group run in parallel, and
+        exactly one of them must be the one that advances the pipeline.
+        """
+        parent = self.session.scalar(
+            select(Job).where(Job.id == self.job.parent_id).with_for_update()
+        )
         if parent is None:
             return
-        stages: list[dict[str, Any]] = parent.input.get("stages", [])
-        index = next((i for i, s in enumerate(stages) if s["job_id"] == str(self.job.id)), None)
-        if index is None:
+        groups: list[list[dict[str, Any]]] = parent.input.get("groups", [])
+        me = str(self.job.id)
+        group_index = next(
+            (i for i, group in enumerate(groups) if any(s["job_id"] == me for s in group)), None
+        )
+        if group_index is None or parent.status in ("failed", "succeeded"):
+            self.session.commit()
             return
-        total = sum(float(s["weight"]) for s in stages) or 1.0
-        before = sum(float(s["weight"]) for s in stages[:index])
-        is_last = index == len(stages) - 1
-        send_next: dict[str, Any] | None = None
 
-        parent.progress = (before + float(stages[index]["weight"]) * self.job.progress) / total
-        parent.step = self.job.step
+        children = {
+            str(child.id): child
+            for child in self.session.scalars(
+                select(Job)
+                .where(Job.parent_id == parent.id)
+                .execution_options(populate_existing=True)
+            )
+        }
+        stages = [stage for group in groups for stage in group]
+        total = sum(float(s["weight"]) for s in stages) or 1.0
+        done = sum(
+            float(s["weight"]) * children[s["job_id"]].progress
+            for s in stages
+            if s["job_id"] in children
+        )
+
+        def succeeded(group: list[dict[str, Any]]) -> bool:
+            return all(
+                s["job_id"] in children and children[s["job_id"]].status == "succeeded"
+                for s in group
+            )
+
+        send_next: list[dict[str, Any]] = []
+        parent.progress = max(parent.progress, min(done / total, 1.0))
         if self.job.status == "failed":
             parent.status = "failed"
             parent.error = self.job.error
-        elif self.job.status == "succeeded" and is_last:
+        elif all(succeeded(group) for group in groups):
             parent.status = "succeeded"
             parent.progress = 1.0
             parent.step = "Done"
             parent.output = self.job.output
         else:
             parent.status = "running"
-            if self.job.status == "succeeded":
-                parent.step = None
-                send_next = stages[index + 1]
+            # A stage's own "Starting" is noise between two named steps.
+            if self.job.status == "running" and self.job.step != STARTING:
+                parent.step = self.job.step
+            is_current = parent.input.get("current", 0) == group_index
+            if is_current and succeeded(groups[group_index]) and group_index + 1 < len(groups):
+                parent.input = {**parent.input, "current": group_index + 1}
+                send_next = groups[group_index + 1]
         self.session.commit()
         publish(event_from_job(parent, eta_s))
-        if send_next is not None:
-            _send(send_next["task"], send_next["job_id"])
+        for stage in send_next:
+            _send(stage["task"], stage["job_id"])
 
 
 class JobTask(Task):
@@ -215,23 +250,34 @@ def enqueue(
     return job
 
 
+Stage = tuple[Task, float]
+
+
 def start_pipeline(
     session: Session,
     *,
     type: str,
     owner_id: UUID,
-    stages: Sequence[tuple[Task, float]],
+    stages: Sequence[Stage | Sequence[Stage]],
     args: dict[str, Any],
     key: str | None = None,
 ) -> Job:
-    """Run `stages` (task, weight) one after another under one parent job.
+    """Run `stages` under one parent job. Each entry is a `(task, weight)` stage, or a
+    list of them to run in parallel; the next entry starts when all of the previous
+    one's jobs have succeeded.
 
     Every stage receives `args` as keyword arguments. Returns the parent, whose id is
     what clients follow. Idempotent on `key` exactly like `enqueue`; a failed pipeline
-    restarts from its first stage (stages skip work they already did).
+    restarts from its first stage (stages overwrite their own artifacts).
     """
-    if not stages:
-        raise ValueError("a pipeline needs at least one stage")
+    groups: list[list[Stage]] = []
+    for entry in stages:
+        if isinstance(entry[0], Task):
+            groups.append([(entry[0], float(entry[1]))])  # type: ignore[arg-type]
+        else:
+            groups.append([(task, float(weight)) for task, weight in entry])  # type: ignore[misc]
+    if not groups or any(not group for group in groups):
+        raise ValueError("a pipeline needs at least one stage per group")
 
     parent: Job | None = None
     if key is not None:
@@ -239,16 +285,17 @@ def start_pipeline(
         if parent is not None and parent.status != "failed":
             return parent
 
-    if parent is None:
+    if parent is not None:
+        # Simplest correct restart: drop the old children and build the plan again.
+        for child in session.scalars(select(Job).where(Job.parent_id == parent.id)):
+            session.delete(child)
+        _reset(parent, {})
+        session.flush()
+    else:
         parent = Job(
-            owner_id=owner_id,
-            type=type,
-            status="queued",
-            progress=0.0,
-            attempts=0,
-            input={},
-            idempotency_key=key,
-        )
+            owner_id=owner_id, type=type, status="queued", progress=0.0, attempts=0,
+            input={}, idempotency_key=key,
+        )  # fmt: skip
         session.add(parent)
         try:
             session.flush()
@@ -258,6 +305,9 @@ def start_pipeline(
             if existing is None:
                 raise
             return existing
+
+    plan: list[list[dict[str, Any]]] = []
+    for group in groups:
         children = [
             Job(
                 owner_id=owner_id,
@@ -267,26 +317,20 @@ def start_pipeline(
                 attempts=0,
                 input=args,
                 parent_id=parent.id,
-            )
-            for task, _ in stages
+            )  # fmt: skip
+            for task, _ in group
         ]
         session.add_all(children)
         session.flush()
-    else:
-        by_id = {str(s["job_id"]): s for s in parent.input.get("stages", [])}
-        found = session.scalars(select(Job).where(Job.parent_id == parent.id)).all()
-        children = sorted(found, key=lambda c: list(by_id).index(str(c.id)))
-        for child in children:
-            _reset(child, args)
-        _reset(parent, {})
+        plan.append(
+            [
+                {"job_id": str(child.id), "task": task.name, "weight": weight}
+                for child, (task, weight) in zip(children, group, strict=True)
+            ]
+        )
 
-    parent.input = {
-        "args": args,
-        "stages": [
-            {"job_id": str(child.id), "task": task.name, "weight": weight}
-            for child, (task, weight) in zip(children, stages, strict=True)
-        ],
-    }
+    parent.input = {"args": args, "groups": plan, "current": 0}
     session.commit()
-    _send(stages[0][0].name, children[0].id)
+    for stage in plan[0]:
+        _send(stage["task"], stage["job_id"])
     return parent

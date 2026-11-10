@@ -1,8 +1,6 @@
 """Reference ingest: source -> stored original -> 540p proxy + speech WAV.
 
-Pipeline (see `start_reference_ingest`):
-
-    io.ingest_reference  ->  cpu.make_proxy
+The first two stages of the reference pipeline (see `jobs.reference_pipeline`).
 """
 
 import hashlib
@@ -15,11 +13,11 @@ from uuid import UUID
 
 from sqlalchemy.orm import Session
 
-from stylecut.db.models import Asset, Job, ReferenceVideo
+from stylecut.db.models import Asset, ReferenceVideo
 from stylecut.ingest.errors import IngestError
 from stylecut.ingest.registry import get_provider
 from stylecut.ingest.upload import upload_source
-from stylecut.jobs.base import JobContext, JobTask, idempotency_key, start_pipeline
+from stylecut.jobs.base import JobContext, JobTask
 from stylecut.jobs.celery_app import celery_app
 from stylecut.media.ffmpeg import FfmpegError, run_ffmpeg
 from stylecut.media.probe import probe
@@ -29,15 +27,7 @@ from stylecut.storage import keys, s3
 
 logger = logging.getLogger(__name__)
 
-PIPELINE_TYPE = "reference.ingest"
-PIPELINE_STEP = "reference_ingest"
-PIPELINE_VERSION = 1
-
 _CONTENT_TYPES = {".mp4": "video/mp4", ".mov": "video/quicktime", ".webm": "video/webm"}
-
-
-def pipeline_key(reference_id: UUID) -> str:
-    return idempotency_key(reference_id, PIPELINE_STEP, PIPELINE_VERSION)
 
 
 def _sha256(path: Path) -> str:
@@ -48,7 +38,9 @@ def _sha256(path: Path) -> str:
     return digest.hexdigest()
 
 
-def _load(session: Session, reference_id: str, asset_id: str) -> tuple[ReferenceVideo, Asset]:
+def load_reference(
+    session: Session, reference_id: str, asset_id: str
+) -> tuple[ReferenceVideo, Asset]:
     reference = session.get(ReferenceVideo, UUID(reference_id))
     asset = session.get(Asset, UUID(asset_id))
     if reference is None or asset is None:
@@ -56,15 +48,23 @@ def _load(session: Session, reference_id: str, asset_id: str) -> tuple[Reference
     return reference, asset
 
 
-def _mark_failed(session: Session, reference_id: str, error: IngestError) -> None:
+def fail_reference(
+    session: Session, reference_id: str, error: dict[str, Any], detail: str | None = None
+) -> None:
+    """Record why a reference failed. `error` is `{code, message, hint}`; `detail` is
+    for logs only."""
     session.rollback()
     reference = session.get(ReferenceVideo, UUID(reference_id))
     if reference is not None:
         reference.status = "failed"
-        reference.error = error.as_dict()
+        reference.error = error
         session.commit()
-    if error.detail:
-        logger.warning("ingest failed for reference %s: %s", reference_id, error.detail)
+    if detail:
+        logger.warning("reference %s failed: %s", reference_id, detail)
+
+
+def _mark_failed(session: Session, reference_id: str, error: IngestError) -> None:
+    fail_reference(session, reference_id, dict(error.as_dict()), error.detail)
 
 
 @celery_app.task(name="io.ingest_reference", base=JobTask)
@@ -73,7 +73,7 @@ def ingest_reference(ctx: JobContext, reference_id: str, asset_id: str) -> dict[
     settings = get_settings()
     session = ctx.session
     try:
-        reference, asset = _load(session, reference_id, asset_id)
+        reference, asset = load_reference(session, reference_id, asset_id)
         reference.status = "ingesting"
         reference.error = None
         session.commit()
@@ -129,7 +129,7 @@ def make_proxy(ctx: JobContext, reference_id: str, asset_id: str) -> dict[str, A
     """540p H.264 CFR 30fps AAC 48k proxy, plus a 16k mono WAV when there is audio."""
     session = ctx.session
     try:
-        reference, asset = _load(session, reference_id, asset_id)
+        reference, asset = load_reference(session, reference_id, asset_id)
         proxy_key = keys.reference_proxy(asset.id)
         speech_key = keys.reference_speech(asset.id)
         ctx.progress(0.05, "Preparing")
@@ -163,14 +163,3 @@ def make_proxy(ctx: JobContext, reference_id: str, asset_id: str) -> dict[str, A
     reference.status = "ingested"
     session.commit()
     return {"asset_id": asset_id, "proxy_key": proxy_key}
-
-
-def start_reference_ingest(session: Session, reference: ReferenceVideo) -> Job:
-    return start_pipeline(
-        session,
-        type=PIPELINE_TYPE,
-        owner_id=reference.owner_id,
-        stages=[(ingest_reference, 0.5), (make_proxy, 0.5)],
-        args={"reference_id": str(reference.id), "asset_id": str(reference.asset_id)},
-        key=pipeline_key(reference.id),
-    )
