@@ -111,6 +111,7 @@ LLM_MODEL_FAST=claude-haiku-5-5
 DATABASE_URL=postgresql+psycopg://stylecut:stylecut@postgres:5432/stylecut
 REDIS_URL=redis://redis:6379/0
 S3_ENDPOINT=http://minio:9000
+S3_PUBLIC_ENDPOINT=http://localhost:9000   # host the browser uses for presigned URLs
 S3_BUCKET=stylecut
 S3_ACCESS_KEY=
 S3_SECRET_KEY=

@@ -1,4 +1,13 @@
-import type { ErrorEnvelope, HealthOut, JobAccepted, JobOut } from "@stylecut/schemas";
+import type {
+  AssetWithUrls,
+  ErrorEnvelope,
+  HealthOut,
+  JobAccepted,
+  JobOut,
+  ReferenceOut,
+  UploadCompleteOut,
+  UploadCreateOut,
+} from "@stylecut/schemas";
 
 export const API_URL = (
   process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000/api/v1"
@@ -71,4 +80,36 @@ export function startDemoJob(): Promise<JobAccepted> {
     method: "POST",
     body: JSON.stringify({ seconds: 5, steps: 10 }),
   });
+}
+
+export type UploadKind = "reference" | "music" | "sfx";
+
+export function createUpload(file: File, kind: UploadKind): Promise<UploadCreateOut> {
+  return apiFetch<UploadCreateOut>("/uploads", {
+    method: "POST",
+    body: JSON.stringify({ filename: file.name, size: file.size, content_type: file.type, kind }),
+  });
+}
+
+export function completeUpload(
+  assetId: string,
+  uploadId: string,
+  parts: { part_number: number; etag: string }[],
+): Promise<UploadCompleteOut> {
+  return apiFetch<UploadCompleteOut>(`/uploads/${assetId}/complete`, {
+    method: "POST",
+    body: JSON.stringify({ upload_id: uploadId, parts }),
+  });
+}
+
+export function createReference(source: { url: string } | { asset_id: string }): Promise<JobAccepted> {
+  return apiFetch<JobAccepted>("/references", { method: "POST", body: JSON.stringify(source) });
+}
+
+export function getReference(id: string): Promise<ReferenceOut> {
+  return apiFetch<ReferenceOut>(`/references/${id}`);
+}
+
+export function getAsset(id: string): Promise<AssetWithUrls> {
+  return apiFetch<AssetWithUrls>(`/assets/${id}`);
 }

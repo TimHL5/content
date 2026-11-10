@@ -1,5 +1,164 @@
 {
   "$defs": {
+    "AssetOut": {
+      "properties": {
+        "created_at": {
+          "format": "date-time",
+          "title": "Created At",
+          "type": "string"
+        },
+        "duration_s": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Duration S"
+        },
+        "expires_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Expires At"
+        },
+        "fps": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Fps"
+        },
+        "has_audio": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Has Audio"
+        },
+        "has_proxy": {
+          "title": "Has Proxy",
+          "type": "boolean"
+        },
+        "height": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Height"
+        },
+        "id": {
+          "format": "uuid",
+          "title": "Id",
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "reference",
+            "footage",
+            "music",
+            "sfx",
+            "render",
+            "image"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "uploading",
+            "ready",
+            "failed",
+            "expired"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "width": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Width"
+        }
+      },
+      "required": [
+        "id",
+        "kind",
+        "status",
+        "has_proxy",
+        "created_at"
+      ],
+      "title": "AssetOut",
+      "type": "object"
+    },
+    "AssetWithUrls": {
+      "description": "`GET /assets/{id}`. URLs are presigned, short-lived, and null once the asset expired.",
+      "properties": {
+        "asset": {
+          "$ref": "#/$defs/AssetOut"
+        },
+        "proxy_url": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Proxy Url"
+        },
+        "url": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Url"
+        }
+      },
+      "required": [
+        "asset"
+      ],
+      "title": "AssetWithUrls",
+      "type": "object"
+    },
     "CheckResult": {
       "properties": {
         "error": {
@@ -326,6 +485,268 @@
         "updated_at"
       ],
       "title": "JobOut",
+      "type": "object"
+    },
+    "ReferenceCreateIn": {
+      "description": "Exactly one of `url` (platform link) or `asset_id` (an uploaded reference file).",
+      "properties": {
+        "asset_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Asset Id"
+        },
+        "url": {
+          "anyOf": [
+            {
+              "maxLength": 2000,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Url"
+        }
+      },
+      "title": "ReferenceCreateIn",
+      "type": "object"
+    },
+    "ReferenceOut": {
+      "properties": {
+        "asset_id": {
+          "format": "uuid",
+          "title": "Asset Id",
+          "type": "string"
+        },
+        "created_at": {
+          "format": "date-time",
+          "title": "Created At",
+          "type": "string"
+        },
+        "error": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ErrorBody"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "id": {
+          "format": "uuid",
+          "title": "Id",
+          "type": "string"
+        },
+        "job_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Job Id"
+        },
+        "platform": {
+          "enum": [
+            "tiktok",
+            "instagram",
+            "youtube",
+            "upload"
+          ],
+          "title": "Platform",
+          "type": "string"
+        },
+        "source_url": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source Url"
+        },
+        "status": {
+          "enum": [
+            "queued",
+            "ingesting",
+            "ingested",
+            "analyzing",
+            "ready",
+            "failed"
+          ],
+          "title": "Status",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "status",
+        "platform",
+        "asset_id",
+        "created_at"
+      ],
+      "title": "ReferenceOut",
+      "type": "object"
+    },
+    "UploadCompleteIn": {
+      "properties": {
+        "parts": {
+          "items": {
+            "$ref": "#/$defs/UploadedPart"
+          },
+          "minItems": 1,
+          "title": "Parts",
+          "type": "array"
+        },
+        "upload_id": {
+          "title": "Upload Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "upload_id",
+        "parts"
+      ],
+      "title": "UploadCompleteIn",
+      "type": "object"
+    },
+    "UploadCompleteOut": {
+      "properties": {
+        "asset": {
+          "$ref": "#/$defs/AssetOut"
+        }
+      },
+      "required": [
+        "asset"
+      ],
+      "title": "UploadCompleteOut",
+      "type": "object"
+    },
+    "UploadCreateIn": {
+      "properties": {
+        "content_type": {
+          "default": "",
+          "maxLength": 127,
+          "title": "Content Type",
+          "type": "string"
+        },
+        "filename": {
+          "maxLength": 255,
+          "minLength": 1,
+          "title": "Filename",
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "reference",
+            "music",
+            "sfx"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "size": {
+          "exclusiveMinimum": 0,
+          "title": "Size",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "filename",
+        "size",
+        "kind"
+      ],
+      "title": "UploadCreateIn",
+      "type": "object"
+    },
+    "UploadCreateOut": {
+      "properties": {
+        "asset_id": {
+          "format": "uuid",
+          "title": "Asset Id",
+          "type": "string"
+        },
+        "part_size": {
+          "title": "Part Size",
+          "type": "integer"
+        },
+        "parts": {
+          "items": {
+            "$ref": "#/$defs/UploadPartUrl"
+          },
+          "title": "Parts",
+          "type": "array"
+        },
+        "upload_id": {
+          "title": "Upload Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "asset_id",
+        "upload_id",
+        "part_size",
+        "parts"
+      ],
+      "title": "UploadCreateOut",
+      "type": "object"
+    },
+    "UploadPartUrl": {
+      "properties": {
+        "part_number": {
+          "title": "Part Number",
+          "type": "integer"
+        },
+        "url": {
+          "title": "Url",
+          "type": "string"
+        }
+      },
+      "required": [
+        "part_number",
+        "url"
+      ],
+      "title": "UploadPartUrl",
+      "type": "object"
+    },
+    "UploadedPart": {
+      "properties": {
+        "etag": {
+          "maxLength": 200,
+          "minLength": 1,
+          "title": "Etag",
+          "type": "string"
+        },
+        "part_number": {
+          "maximum": 10000,
+          "minimum": 1,
+          "title": "Part Number",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "part_number",
+        "etag"
+      ],
+      "title": "UploadedPart",
       "type": "object"
     }
   },

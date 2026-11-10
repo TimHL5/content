@@ -1,7 +1,7 @@
 # PLAN.md — StyleCut Build Plan
 
 Each phase ends with something demoable. Each task is sized for about one Claude Code session.
-Check boxes as tasks complete. **Current phase: 0**
+Check boxes as tasks complete. **Current phase: 1**
 
 ---
 
@@ -26,7 +26,7 @@ Check boxes as tasks complete. **Current phase: 0**
 ## Phase 1 — Ingest
 **Goal:** the user pastes a URL or uploads a file and gets a normalized, playable proxy with metadata.
 
-- [ ] Presigned multipart upload flow (`POST /uploads` → browser → S3 → `POST /uploads/{id}/complete`).
+- [x] Presigned multipart upload flow (`POST /uploads` → browser → S3 → `POST /uploads/{id}/complete`).
 - [ ] `IngestProvider` interface (`can_handle(url)`, `fetch(url) -> LocalFile + SourceMeta`). Implement `UploadProvider` and `YtDlpProvider` (YouTube Shorts, Instagram Reels, TikTok). Feature flag `ENABLE_URL_INGEST`.
 - [ ] URL normalization and platform detection. Friendly errors for private, removed, region-locked, or too-long (>3 min) videos.
 - [ ] `media.probe()` (ffprobe → duration, w/h, fps, rotation, audio streams).
