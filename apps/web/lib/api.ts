@@ -5,6 +5,9 @@ import type {
   JobAccepted,
   JobOut,
   ReferenceOut,
+  StyleProfileOut,
+  StyleProfilePatch,
+  StyleProfileSummary,
   UploadCompleteOut,
   UploadCreateOut,
 } from "@stylecut/schemas";
@@ -112,4 +115,22 @@ export function getReference(id: string): Promise<ReferenceOut> {
 
 export function getAsset(id: string): Promise<AssetWithUrls> {
   return apiFetch<AssetWithUrls>(`/assets/${id}`);
+}
+
+export function listStyleProfiles(): Promise<StyleProfileSummary[]> {
+  return apiFetch<StyleProfileSummary[]>("/style-profiles");
+}
+
+export function getStyleProfile(id: string): Promise<StyleProfileOut> {
+  return apiFetch<StyleProfileOut>(`/style-profiles/${id}`);
+}
+
+/** `overrides` maps JSON pointers to values; null restores the analyzed value. */
+export function patchStyleProfile(id: string, patch: StyleProfilePatch): Promise<StyleProfileOut> {
+  return apiFetch<StyleProfileOut>(`/style-profiles/${id}`, { method: "PATCH", body: JSON.stringify(patch) });
+}
+
+export async function deleteStyleProfile(id: string): Promise<void> {
+  const res = await fetch(`${API_URL}/style-profiles/${id}`, { method: "DELETE" });
+  if (!res.ok) throw toApiError(res.status, await readJson(res));
 }

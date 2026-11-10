@@ -16,6 +16,8 @@
   --bad-bg: #fee2e2;
   --pending: #a16207;
   --pending-bg: #fef9c3;
+  --chart: #be123c;
+  --chart-grid: #e7e5e4;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -35,6 +37,8 @@
     --bad-bg: #3b1616;
     --pending: #facc15;
     --pending-bg: #352c0c;
+    --chart: #fb7185;
+    --chart-grid: #2e2a27;
   }
 }
 
@@ -54,6 +58,8 @@
   --color-bad-bg: var(--bad-bg);
   --color-pending: var(--pending);
   --color-pending-bg: var(--pending-bg);
+  --color-chart: var(--chart);
+  --color-chart-grid: var(--chart-grid);
   --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 }
 

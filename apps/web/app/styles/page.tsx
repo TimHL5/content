@@ -1,9 +1,10 @@
-import { Plus, Sparkles } from "lucide-react";
+import { Plus } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 
-import { EmptyState } from "@/components/empty-state";
 import { buttonVariants } from "@/components/ui/button";
+
+import { StylesList } from "./styles-list";
 
 export const metadata: Metadata = { title: "Styles" };
 
@@ -17,11 +18,7 @@ export default function StylesPage() {
           New style
         </Link>
       </div>
-      <EmptyState
-        icon={Sparkles}
-        title="No styles yet"
-        body="A style is the pacing, captions, zooms, and hook of a video you like, saved so you can reuse it."
-      />
+      <StylesList />
     </>
   );
 }

@@ -2,12 +2,13 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { Upload } from "lucide-react";
-import { useRef, useState, type DragEvent, type FormEvent } from "react";
+import { useRouter } from "next/navigation";
+import { useEffect, useRef, useState, type DragEvent, type FormEvent } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardDescription, CardTitle } from "@/components/ui/card";
 import { useJob } from "@/hooks/use-job";
-import { ApiError, createReference, getAsset, getReference } from "@/lib/api";
+import { ApiError, createReference, getReference } from "@/lib/api";
 import { referenceFileProblem, uploadFile } from "@/lib/upload";
 import { cn } from "@/lib/utils";
 
@@ -66,29 +67,24 @@ export function NewStyle() {
     queryFn: () => getReference(processing?.referenceId ?? ""),
     enabled: processing !== null && (jobStatus === "succeeded" || jobStatus === "failed"),
   });
-  const asset = useQuery({
-    queryKey: ["asset", reference.data?.asset_id],
-    queryFn: () => getAsset(reference.data?.asset_id ?? ""),
-    enabled: jobStatus === "succeeded" && reference.data !== undefined,
-  });
+  const styleId = jobStatus === "succeeded" ? (reference.data?.style_profile_id ?? null) : null;
+  const router = useRouter();
+  useEffect(() => {
+    if (styleId !== null) router.replace(`/styles/${styleId}`);
+  }, [styleId, router]);
 
   const failure: Problem | null =
     problem ??
     (jobStatus === "failed"
       ? {
           message: reference.data?.error?.message ?? event?.error ?? "We couldn't process that video.",
-          hint: reference.data?.error?.hint ?? "Upload the file instead.",
+          hint: reference.data?.error?.hint ?? null,
         }
       : null);
-  const failedUrl = failure !== null && processing?.source === "url";
-  const busy = phase.kind === "uploading" || phase.kind === "starting" || (processing !== null && jobStatus !== "succeeded" && jobStatus !== "failed");
-  const proxyUrl = asset.data?.proxy_url ?? null;
-
-  function reset() {
-    setPhase({ kind: "idle" });
-    setProblem(null);
-    setUrl("");
-  }
+  // Only a download problem is fixed by uploading the file yourself.
+  const failedUrl =
+    failure !== null && processing?.source === "url" && (reference.data?.error?.code ?? "").startsWith("INGEST_");
+  const busy = phase.kind === "uploading" || phase.kind === "starting" || (processing !== null && jobStatus !== "failed");
 
   async function begin(source: { url: string } | { asset_id: string }, kind: "url" | "upload") {
     setPhase({ kind: "starting" });
@@ -135,25 +131,8 @@ export function NewStyle() {
     void submitFile(e.dataTransfer.files[0]);
   }
 
-  if (proxyUrl !== null) {
-    return (
-      <Card data-testid="reference-ready">
-        <CardTitle>Reference ready</CardTitle>
-        <CardDescription>
-          This is the copy we analyze. The video is deleted from our storage within 24 hours; only its style is kept.
-        </CardDescription>
-        <video
-          src={proxyUrl}
-          controls
-          playsInline
-          preload="metadata"
-          className="mx-auto mt-4 max-h-[70dvh] w-auto rounded-lg bg-black"
-        />
-        <Button variant="outline" className="mt-4 w-full sm:w-auto" onClick={reset}>
-          Add another video
-        </Button>
-      </Card>
-    );
+  if (styleId !== null) {
+    return <p className="text-sm text-muted-foreground">Opening your new style…</p>;
   }
 
   return (
