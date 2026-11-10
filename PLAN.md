@@ -27,7 +27,7 @@ Check boxes as tasks complete. **Current phase: 1**
 **Goal:** the user pastes a URL or uploads a file and gets a normalized, playable proxy with metadata.
 
 - [x] Presigned multipart upload flow (`POST /uploads` → browser → S3 → `POST /uploads/{id}/complete`).
-- [ ] `IngestProvider` interface (`can_handle(url)`, `fetch(url) -> LocalFile + SourceMeta`). Implement `UploadProvider` and `YtDlpProvider` (YouTube Shorts, Instagram Reels, TikTok). Feature flag `ENABLE_URL_INGEST`.
+- [x] `IngestProvider` interface (`can_handle(url)`, `fetch(url) -> LocalFile + SourceMeta`). Implement `UploadProvider` and `YtDlpProvider` (YouTube Shorts, Instagram Reels, TikTok). Feature flag `ENABLE_URL_INGEST`.
 - [ ] URL normalization and platform detection. Friendly errors for private, removed, region-locked, or too-long (>3 min) videos.
 - [ ] `media.probe()` (ffprobe → duration, w/h, fps, rotation, audio streams).
 - [ ] Proxy transcode: 540p H.264 (`-preset veryfast`), CFR 30fps, AAC 48k; plus a 16k mono WAV for speech.

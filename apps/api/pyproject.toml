@@ -15,6 +15,7 @@ dependencies = [
     "redis>=5.2",
     "boto3>=1.35",
     "sse-starlette>=2.1",
+    "yt-dlp>=2025.1.15",
 ]
 
 [dependency-groups]
@@ -36,6 +37,9 @@ target-version = "py312"
 select = ["E", "F", "I", "UP", "B", "SIM"]
 ignore = ["B008"]  # FastAPI's Depends() in argument defaults
 
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["E501"]  # parametrize tables read better on one line
+
 [tool.mypy]
 python_version = "3.12"
 strict = true
@@ -46,7 +50,7 @@ disallow_subclassing_any = false
 disallow_untyped_decorators = false
 
 [[tool.mypy.overrides]]
-module = ["celery.*", "kombu.*", "boto3.*", "botocore.*"]
+module = ["celery.*", "kombu.*", "boto3.*", "botocore.*", "yt_dlp.*"]
 ignore_missing_imports = true
 follow_imports = "skip"
 
