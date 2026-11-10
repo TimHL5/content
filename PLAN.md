@@ -13,7 +13,7 @@ Check boxes as tasks complete. **Current phase: 0**
 - [x] FastAPI app with `/health` checking DB, Redis, and S3. Settings via pydantic-settings.
 - [x] SQLAlchemy + Alembic setup. First migration: `users`, `assets`, `jobs` (see DATA_MODEL.md).
 - [x] Celery app with `io`/`cpu`/`gpu`/`llm` queues. Job base class that writes status/progress to `jobs` and publishes progress to Redis.
-- [ ] SSE endpoint `GET /jobs/{id}/events`.
+- [x] SSE endpoint `GET /jobs/{id}/events`.
 - [ ] Next.js app shell: sidebar (Styles, Projects), health page, TanStack Query, generated-types import path.
 - [ ] `make types` pipeline (pydantic → JSON Schema → `json-schema-to-typescript`).
 - [ ] `make fixtures`: generate synthetic clips with ffmpeg lavfi: `talking_head_10s.mp4` (testsrc2 + sine), `broll_5s.mp4`, `music_120bpm_20s.wav` (click track), `vertical_hardcuts_15s.mp4` (color-card cuts at known timestamps).
