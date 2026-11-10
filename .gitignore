@@ -1,0 +1,29 @@
+# unrelated to StyleCut, kept on disk only
+skills/
+
+# OS / editor
+.DS_Store
+.claude/settings.local.json
+
+# secrets
+.env
+.env.*
+!.env.example
+
+# python
+__pycache__/
+*.py[cod]
+.venv/
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+
+# node
+node_modules/
+.next/
+*.tsbuildinfo
+
+# media: real eval clips and generated fixtures never get committed
+eval/
+apps/api/tests/fixtures/*.mp4
+apps/api/tests/fixtures/*.wav
