@@ -28,7 +28,7 @@ Check boxes as tasks complete. **Current phase: 1**
 
 - [x] Presigned multipart upload flow (`POST /uploads` → browser → S3 → `POST /uploads/{id}/complete`).
 - [x] `IngestProvider` interface (`can_handle(url)`, `fetch(url) -> LocalFile + SourceMeta`). Implement `UploadProvider` and `YtDlpProvider` (YouTube Shorts, Instagram Reels, TikTok). Feature flag `ENABLE_URL_INGEST`.
-- [ ] URL normalization and platform detection. Friendly errors for private, removed, region-locked, or too-long (>3 min) videos.
+- [x] URL normalization and platform detection. Friendly errors for private, removed, region-locked, or too-long (>3 min) videos.
 - [ ] `media.probe()` (ffprobe → duration, w/h, fps, rotation, audio streams).
 - [ ] Proxy transcode: 540p H.264 (`-preset veryfast`), CFR 30fps, AAC 48k; plus a 16k mono WAV for speech.
 - [ ] S3 lifecycle rule: `references/raw/*` expires in 24h.
