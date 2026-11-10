@@ -16,7 +16,7 @@ Check boxes as tasks complete. **Current phase: 0**
 - [x] SSE endpoint `GET /jobs/{id}/events`.
 - [x] Next.js app shell: sidebar (Styles, Projects), health page, TanStack Query, generated-types import path.
 - [x] `make types` pipeline (pydantic → JSON Schema → `json-schema-to-typescript`).
-- [ ] `make fixtures`: generate synthetic clips with ffmpeg lavfi: `talking_head_10s.mp4` (testsrc2 + sine), `broll_5s.mp4`, `music_120bpm_20s.wav` (click track), `vertical_hardcuts_15s.mp4` (color-card cuts at known timestamps).
+- [x] `make fixtures`: generate synthetic clips with ffmpeg lavfi: `talking_head_10s.mp4` (testsrc2 + sine), `broll_5s.mp4`, `music_120bpm_20s.wav` (click track), `vertical_hardcuts_15s.mp4` (color-card cuts at known timestamps).
 - [ ] CI (GitHub Actions): lint, test, build web.
 
 **Done when:** fresh clone → `make dev` → health page all green; CI passes.
