@@ -25,6 +25,11 @@ def reference_proxy(asset_id: UUID) -> str:
     return f"references/proxy/{asset_id}.mp4"
 
 
+def reference_speech(asset_id: UUID) -> str:
+    """16 kHz mono WAV for speech-to-text. Expires with the proxy."""
+    return f"references/proxy/{asset_id}.wav"
+
+
 def reference_derived(asset_id: UUID, artifact: DerivedArtifact) -> str:
     return f"references/derived/{asset_id}/{artifact}.json"
 

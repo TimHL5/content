@@ -1,7 +1,7 @@
 from fastapi import APIRouter, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from stylecut.api import dev, health, jobs
+from stylecut.api import dev, health, jobs, references, uploads
 from stylecut.api.errors import install_error_handlers, install_unhandled_error_middleware
 from stylecut.settings import get_settings
 
@@ -23,6 +23,8 @@ def create_app() -> FastAPI:
     v1 = APIRouter(prefix=API_PREFIX)
     v1.include_router(health.router)
     v1.include_router(jobs.router)
+    v1.include_router(uploads.router)
+    v1.include_router(references.router)
     if settings.enable_dev_routes:
         v1.include_router(dev.router)
     app.include_router(v1)

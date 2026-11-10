@@ -30,7 +30,7 @@ Check boxes as tasks complete. **Current phase: 1**
 - [x] `IngestProvider` interface (`can_handle(url)`, `fetch(url) -> LocalFile + SourceMeta`). Implement `UploadProvider` and `YtDlpProvider` (YouTube Shorts, Instagram Reels, TikTok). Feature flag `ENABLE_URL_INGEST`.
 - [x] URL normalization and platform detection. Friendly errors for private, removed, region-locked, or too-long (>3 min) videos.
 - [x] `media.probe()` (ffprobe → duration, w/h, fps, rotation, audio streams).
-- [ ] Proxy transcode: 540p H.264 (`-preset veryfast`), CFR 30fps, AAC 48k; plus a 16k mono WAV for speech.
+- [x] Proxy transcode: 540p H.264 (`-preset veryfast`), CFR 30fps, AAC 48k; plus a 16k mono WAV for speech.
 - [ ] S3 lifecycle rule: `references/raw/*` expires in 24h.
 - [ ] Web: "New Style" page with URL paste box and drag-and-drop, live job progress, proxy player.
 

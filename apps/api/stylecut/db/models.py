@@ -25,6 +25,8 @@ from stylecut.db.base import Base
 ASSET_KINDS = ("reference", "footage", "music", "sfx", "render", "image")
 ASSET_STATUSES = ("uploading", "ready", "failed", "expired")
 JOB_STATUSES = ("queued", "running", "succeeded", "failed")
+PLATFORMS = ("tiktok", "instagram", "youtube", "upload")
+REFERENCE_STATUSES = ("queued", "ingesting", "ingested", "analyzing", "ready", "failed")
 
 
 def _in(column: str, values: tuple[str, ...]) -> str:
@@ -95,3 +97,30 @@ class Job(Base):
     parent_id: Mapped[UUID | None] = mapped_column(
         PGUUID(as_uuid=True), ForeignKey("jobs.id", ondelete="CASCADE")
     )
+
+
+class ReferenceVideo(Base):
+    """One per analyzed reference. (`references` is a reserved word in Postgres.)"""
+
+    __tablename__ = "reference_videos"
+    __table_args__ = (
+        CheckConstraint(_in("platform", PLATFORMS), name="ck_reference_videos_platform"),
+        CheckConstraint(_in("status", REFERENCE_STATUSES), name="ck_reference_videos_status"),
+        Index("ix_reference_videos_owner_created", "owner_id", "created_at"),
+    )
+
+    owner_id: Mapped[UUID] = mapped_column(
+        PGUUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False
+    )
+    asset_id: Mapped[UUID] = mapped_column(
+        PGUUID(as_uuid=True), ForeignKey("assets.id", ondelete="CASCADE"), nullable=False
+    )
+    source_url: Mapped[str | None] = mapped_column(Text)
+    platform: Mapped[str] = mapped_column(String(16), nullable=False)
+    status: Mapped[str] = mapped_column(String(16), nullable=False, server_default="queued")
+    # S3 keys of scenes/audio/transcript/color/sheets, filled in by the analysis DAG.
+    derived: Mapped[dict[str, Any]] = mapped_column(
+        JSONB, nullable=False, server_default=text("'{}'::jsonb")
+    )
+    # {code, message, hint} when status is "failed".
+    error: Mapped[dict[str, Any] | None] = mapped_column(JSONB)

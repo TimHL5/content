@@ -38,13 +38,10 @@ def test_hardcut_segments_cover_the_whole_clip() -> None:
     assert all((t * FPS) == int(t * FPS) for t in HARDCUT_TIMES_S)
 
 
-@pytest.fixture(scope="module")
-def clips(tmp_path_factory: pytest.TempPathFactory) -> Path:
-    out = tmp_path_factory.mktemp("fixtures")
-    written = make_fixtures(out)
+def test_make_fixtures_writes_every_clip_once(tmp_path: Path) -> None:
+    written = make_fixtures(tmp_path)
     assert {p.name for p in written} == set(FIXTURES)
-    assert make_fixtures(out) == []  # second run is a no-op
-    return out
+    assert make_fixtures(tmp_path) == []  # second run is a no-op
 
 
 @pytest.mark.parametrize("name", sorted(FIXTURES))

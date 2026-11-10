@@ -6,6 +6,7 @@ so running them never touches dev data.
 
 import os
 from collections.abc import Iterator
+from pathlib import Path
 from uuid import UUID
 
 import pytest
@@ -22,13 +23,16 @@ _redis_base = os.environ.get("REDIS_URL", "redis://redis:6379/0").rsplit("/", 1)
 os.environ["DATABASE_URL"] = _test_url.render_as_string(hide_password=False)
 os.environ["REDIS_URL"] = f"{_redis_base}/15"
 os.environ["ENABLE_DEV_ROUTES"] = "true"
+# Presigned URLs must be reachable from inside the test process.
+os.environ["S3_PUBLIC_ENDPOINT"] = os.environ.get("S3_ENDPOINT", "http://minio:9000")
 
 from alembic import command  # noqa: E402
 from alembic.config import Config  # noqa: E402
 from fastapi.testclient import TestClient  # noqa: E402
 from sqlalchemy.orm import Session  # noqa: E402
 
-from scripts.bootstrap_storage import ensure_bucket  # noqa: E402
+from scripts.bootstrap_storage import ensure_bucket, ensure_lifecycle  # noqa: E402
+from scripts.make_fixtures import make_fixtures  # noqa: E402
 from stylecut.db.session import get_sessionmaker  # noqa: E402
 from stylecut.settings import get_settings  # noqa: E402
 
@@ -47,6 +51,7 @@ def _infrastructure() -> Iterator[None]:
     command.upgrade(alembic_config(), "head")
 
     ensure_bucket()
+    ensure_lifecycle()
     yield
 
 
@@ -67,3 +72,23 @@ def client() -> Iterator[TestClient]:
 @pytest.fixture
 def user_id() -> UUID:
     return get_settings().dev_user_id
+
+
+@pytest.fixture(scope="session")
+def clips(tmp_path_factory: pytest.TempPathFactory) -> Path:
+    """The synthetic fixture clips (`make fixtures`), generated once per test run."""
+    out = tmp_path_factory.mktemp("fixtures")
+    make_fixtures(out)
+    return out
+
+
+@pytest.fixture
+def eager() -> Iterator[None]:
+    """Run Celery tasks inline, through the real apply_async and task base class."""
+    from stylecut.jobs.celery_app import celery_app
+
+    celery_app.conf.task_always_eager = True
+    try:
+        yield
+    finally:
+        celery_app.conf.task_always_eager = False
