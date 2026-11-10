@@ -8,7 +8,7 @@ Check boxes as tasks complete. **Current phase: 0**
 ## Phase 0 — Scaffolding
 **Goal:** `make dev` boots every service. A health page shows API, DB, Redis, and S3 all green.
 
-- [ ] Monorepo layout per CLAUDE.md. Makefile with all targets (stubs OK).
+- [x] Monorepo layout per CLAUDE.md. Makefile with all targets (stubs OK).
 - [ ] docker-compose: postgres, redis, minio (+ bucket bootstrap), api, worker (all queues), web.
 - [ ] FastAPI app with `/health` checking DB, Redis, and S3. Settings via pydantic-settings.
 - [ ] SQLAlchemy + Alembic setup. First migration: `users`, `assets`, `jobs` (see DATA_MODEL.md).
