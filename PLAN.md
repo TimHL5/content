@@ -47,7 +47,7 @@ Spec: `docs/STYLE_PROFILE_SPEC.md`
 - [x] `analysis/audio.py`: loudness (pyloudnorm), BPM and beat grid (librosa), onset peaks, cut-to-beat alignment %. Test with the click track.
 - [x] `analysis/speech.py`: faster-whisper with word timestamps → transcript, WPM, pause distribution, filler rate, speech coverage %.
 - [x] `analysis/visual.py`: pick 2 frames/shot (max 48) → build 3×4 contact sheets with burned-in timestamps and shot ids. Optical-flow motion score per shot. Punch-in detection (scale change between consecutive shots with the same subject).
-- [ ] `analysis/color.py`: mean luma, contrast, saturation, warmth (LAB b*) → `color` block + approximate `eq` filter params.
+- [x] `analysis/color.py`: mean luma, contrast, saturation, warmth (LAB b*) → `color` block + approximate `eq` filter params.
 - [ ] `analysis/vision_llm.py`: contact sheets → Claude vision (prompt `visual_breakdown`) → per-shot type, caption style, overlays, setting, b-roll flag.
 - [ ] `analysis/synthesis.py`: merge all signals → `style_synthesis` prompt → StyleProfile (narrative beats, hook type, editing rules). Deterministic fields are copied from code output, never invented by the LLM.
 - [ ] Celery DAG: `ingest → proxy → [scene, audio, speech, color] → visual → vision_llm → synthesis → cleanup` (see ARCHITECTURE.md) with fan-out where possible.
