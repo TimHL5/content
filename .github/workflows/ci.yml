@@ -1,0 +1,98 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  api:
+    name: API (lint, types, tests)
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: apps/api
+    env:
+      DATABASE_URL: postgresql+psycopg://stylecut:stylecut@localhost:5432/stylecut
+      REDIS_URL: redis://localhost:6379/0
+      S3_ENDPOINT: http://localhost:9000
+      S3_BUCKET: stylecut
+      # Throwaway credentials for the MinIO container started below.
+      S3_ACCESS_KEY: minioadmin
+      S3_SECRET_KEY: minioadmin
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: stylecut
+          POSTGRES_PASSWORD: stylecut
+          POSTGRES_DB: stylecut
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U stylecut" --health-interval 3s
+          --health-timeout 3s --health-retries 20
+      redis:
+        image: redis:7-alpine
+        ports: ["6379:6379"]
+        options: >-
+          --health-cmd "redis-cli ping" --health-interval 3s
+          --health-timeout 3s --health-retries 20
+    steps:
+      - uses: actions/checkout@v4
+      # Service containers cannot take a command, and MinIO needs `server /data`.
+      - name: Start MinIO
+        run: >
+          docker run -d --name minio -p 9000:9000
+          -e MINIO_ROOT_USER=$S3_ACCESS_KEY -e MINIO_ROOT_PASSWORD=$S3_SECRET_KEY
+          cgr.dev/chainguard/minio:latest server /data
+      - name: Install ffmpeg
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends ffmpeg
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+          cache-dependency-glob: apps/api/uv.lock
+      - run: uv sync --frozen
+      - run: uv run ruff check .
+      - run: uv run ruff format --check .
+      - run: uv run mypy
+      - run: uv run pytest
+
+  web:
+    name: Web (lint, types, tests, build)
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter web lint
+      - run: pnpm --filter web typecheck
+      - run: pnpm -r test
+      - run: pnpm --filter web build
+
+  types:
+    name: Generated types are up to date
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: uv sync --frozen
+        working-directory: apps/api
+      - run: uv run python -m scripts.export_schemas
+        working-directory: apps/api
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @stylecut/schemas generate
+      - name: Fail if `make types` output is stale
+        run: git diff --exit-code -- packages/schemas/generated

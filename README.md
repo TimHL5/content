@@ -31,5 +31,25 @@ docs/
 4. After that, just run `/next-task` each session. Run `/phase-review` before moving to the next phase.
 5. Put 10 real reference clips you have the right to use into `eval/` before Phase 2. That's your quality benchmark.
 
+## Run it
+
+The host only needs Docker. Everything else (Python 3.12, ffmpeg 7, Node, pnpm) runs in containers.
+
+```bash
+make dev        # creates .env from .env.example on first run, then starts every service
+```
+
+- Web: http://localhost:3000 (System page: http://localhost:3000/health)
+- API: http://localhost:8000/api/v1/health, docs at http://localhost:8000/docs
+- MinIO console: http://localhost:9001 (credentials from `.env`)
+
+```bash
+make test       # pytest (real Postgres/Redis/MinIO, separate test database) + vitest
+make lint       # ruff, mypy, eslint, tsc
+make types      # Pydantic -> JSON Schema -> packages/schemas/generated/index.ts
+make fixtures   # synthetic clips in apps/api/tests/fixtures/
+make lock       # refresh uv.lock and pnpm-lock.yaml after changing dependencies
+```
+
 ## Prerequisites
 Docker, an Anthropic API key, and ideally a machine with an NVIDIA GPU for Whisper. CPU works with `WHISPER_MODEL=small`, just slower.

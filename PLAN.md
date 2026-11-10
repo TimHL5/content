@@ -17,7 +17,7 @@ Check boxes as tasks complete. **Current phase: 0**
 - [x] Next.js app shell: sidebar (Styles, Projects), health page, TanStack Query, generated-types import path.
 - [x] `make types` pipeline (pydantic → JSON Schema → `json-schema-to-typescript`).
 - [x] `make fixtures`: generate synthetic clips with ffmpeg lavfi: `talking_head_10s.mp4` (testsrc2 + sine), `broll_5s.mp4`, `music_120bpm_20s.wav` (click track), `vertical_hardcuts_15s.mp4` (color-card cuts at known timestamps).
-- [ ] CI (GitHub Actions): lint, test, build web.
+- [x] CI (GitHub Actions): lint, test, build web.
 
 **Done when:** fresh clone → `make dev` → health page all green; CI passes.
 
@@ -156,3 +156,18 @@ Spec: `docs/EDIT_ENGINE_SPEC.md`
 - 2026-11-10 — Job idempotency key generalized to `(subject_id, step, step_version)`, nullable — plan/assemble/render jobs have no asset.
 - 2026-11-10 — Added `projects.share_token`, `GET /share/{token}`, `GET /health`, `GET /assets/{id}`, list endpoints for references/projects, `DELETE /projects/{id}` — needed by UI flows already in PLAN.md.
 - 2026-11-10 — Voice track is built from selected a_roll takes, not mirrored from the video track — required for J-cuts under b-roll.
+- 2026-11-10 — Host needs only Docker; `make` targets run in containers. Python deps via uv (`apps/api/uv.lock`), JS via pnpm workspaces — the dev machine has no Python 3.12/ffmpeg, and this keeps local and CI identical.
+- 2026-11-10 — MinIO image is `cgr.dev/chainguard/minio:latest`; bucket bootstrap is `scripts/bootstrap_storage.py` (compose service `storage-init`) — `minio/minio` and `minio/mc` are no longer on Docker Hub. Chainguard's free tier only offers `latest`, so the tag is unpinned.
+- 2026-11-10 — Sync SQLAlchemy (psycopg 3) in API and workers; async Redis only inside the SSE endpoint — one DB access style everywhere; Celery is sync anyway.
+- 2026-11-10 — A task's queue is the prefix of its name (`io.`/`cpu.`/`gpu.`/`llm.`); unprefixed tasks go to `cpu` — routing can't drift from naming.
+- 2026-11-10 — Jobs are started only through `jobs.base.enqueue()` (row first, then send); `JobTask` passes the job's `input` as kwargs and sets `typing = False` so Celery doesn't reject the `job_id` kwarg.
+- 2026-11-10 — SSE stream re-reads the job row if no event arrives for 10s — ends the stream when a worker dies without publishing.
+- 2026-11-10 — `ENABLE_DEV_ROUTES` + `POST /api/v1/dev/demo-job` (`cpu.demo_sleep`) and a "Run test job" button on the System page — lets Phase 0 demo queue → worker → progress → SSE before any real job exists. Off by default.
+- 2026-11-10 — Health is served at `/api/v1/health` and unversioned `/health` (container healthchecks). Failed checks report only the exception class name — messages can contain hosts or credentials.
+- 2026-11-10 — Status/kind columns are `varchar` + CHECK constraints, not Postgres enums — adding a value is a one-line migration.
+- 2026-11-10 — Tests use real Postgres/Redis/MinIO: database `stylecut_test` (recreated per run) and Redis db 15 — no mocks to drift, dev data untouched. A test asserts the hand-written migration matches the models.
+- 2026-11-10 — `make types` emits one `schemas.json` and one `generated/index.ts` from the models listed in `stylecut/schemas/__init__.py::EXPORTED_MODELS`; both are committed and CI fails if they are stale.
+- 2026-11-10 — Fixture clips are 540×960 (proxy size) and gitignored; `stylecut/media/fixtures.py` exports the known cut times and BPM for Phase 2 tests.
+- 2026-11-10 — Dev migrations run automatically when the `api` container starts — required for "fresh clone → make dev → green".
+- 2026-11-10 — shadcn/ui components (`card`, `badge`, `button`) are written in the shadcn conventions with `components.json` in place, so `shadcn add` works for later components.
+- 2026-11-10 — New libraries. API: fastapi, uvicorn, pydantic-settings, sqlalchemy, alembic, psycopg, celery, redis, boto3, sse-starlette; dev: pytest, httpx, ruff, mypy. Web: next 15, react 19, @tanstack/react-query, tailwindcss 4, class-variance-authority, clsx, tailwind-merge, lucide-react, vitest, json-schema-to-typescript — all named in or implied by the stack in CLAUDE.md except sse-starlette (SSE responses with keep-alive pings) and boto3 (S3 client).
