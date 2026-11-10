@@ -11,3 +11,6 @@ Claude: append questions here when a spec is ambiguous. Format:
 - [ ] (phase 2, 2026-11-10) The "<90s on a GPU worker" target cannot be measured on the dev machine (no NVIDIA GPU). — Measure CPU time locally with `WHISPER_MODEL=small`; verify the GPU number on the first deployed worker.
 - [ ] (phase 7, 2026-11-10) Separate DB role for the yt-dlp `io` worker (ARCHITECTURE.md Security). — Deferred to deploy; single role in local dev.
 - [ ] (phase 0, 2026-11-10) Stack pins Next.js 15 while a newer major exists. — Stay on 15 as decided in CLAUDE.md.
+- [ ] (phase 1, 2026-11-10) Phase 1 "Done when" names a TikTok URL; live ingest was verified with a YouTube URL only (no TikTok/Instagram link was available to test). — Paste one of each on the New style page to confirm; both platforms often need cookies or block datacenter IPs, which surfaces as `INGEST_LOGIN_REQUIRED`/`INGEST_FAILED` with the upload fallback.
+- [ ] (phase 7, 2026-11-10) Browser uploads need bucket CORS that allows PUT from the web origin and exposes `ETag`. Local MinIO allows this by default. — Add an explicit CORS rule when choosing the production S3 provider.
+- [ ] (phase 2, 2026-11-10) Pipelines run stages one after another. The analysis DAG needs a parallel stage (scenes, audio, speech, color). — Extend `start_pipeline` stages to groups in Phase 2.

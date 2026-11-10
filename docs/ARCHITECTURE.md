@@ -62,7 +62,9 @@ ingest_reference (io)
                                           ▼
                      cleanup_reference_media (io)  [schedules deletion]
 ```
-Use Celery `chord`/`group`. Each task writes its artifact to S3 and a row in `jobs`. The parent job's progress is the weighted sum of its children.
+Each task writes its artifact to S3 and a row in `jobs`. The parent job's progress is the weighted sum of its children.
+
+**Pipelines** (`jobs/base.py::start_pipeline`): one parent `jobs` row, which is the id the client follows over SSE, plus one child row per stage. The parent runs no code; each stage is sent when the previous one succeeds, and a failed stage fails the parent. Phase 1 ships sequential stages (`io.ingest_reference → cpu.make_proxy`); the Phase 2 fan-out extends a stage to a group of tasks (Celery `group`/`chord` or the same DB-driven hand-off).
 
 ### Footage processing (per uploaded clip, in parallel)
 ```
@@ -81,6 +83,7 @@ Assembly passes are pure functions `Timeline -> Timeline` (except the LLM passes
 ```
 references/raw/{asset_id}.{ext}                 # expires 24h
 references/proxy/{asset_id}.mp4                 # expires 24h
+references/proxy/{asset_id}.wav                 # 16k mono speech track, expires 24h
 references/derived/{asset_id}/scenes.json
 references/derived/{asset_id}/audio.json
 references/derived/{asset_id}/transcript.json
@@ -128,6 +131,7 @@ Published on Redis channel `job:{id}`:
 - Use NVENC (`h264_nvenc`) on GPU workers for final renders if available; fall back to libx264 `-preset veryfast`.
 
 ## Security
-- All S3 access is presigned and short-lived (15 min). Buckets are private.
+- All S3 access is presigned and short-lived (15 min). Buckets are private. Presigned URLs are signed for `S3_PUBLIC_ENDPOINT` (the host the browser calls), server-side calls use `S3_ENDPOINT`.
+- URL ingest accepts only an allow-list of hosts and path shapes (`ingest/urls.py`), so the downloader cannot be pointed at internal addresses.
 - Ownership check middleware: every resource is resolved through `owner_id`.
 - yt-dlp runs in the `io` worker container with no access to DB credentials beyond its job row (separate DB role). Downloads are capped at 200MB and 3 min.

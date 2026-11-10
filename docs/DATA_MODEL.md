@@ -5,8 +5,8 @@ All tables: `id uuid pk default gen_random_uuid()`, `created_at`, `updated_at`. 
 | Table | Key columns | Notes |
 |---|---|---|
 | `users` | email, name, plan | Single dev user until Phase 7 |
-| `assets` | owner_id, kind (`reference`\|`footage`\|`music`\|`sfx`\|`render`\|`image`), s3_key, proxy_key, content_hash, duration_s, width, height, fps, has_audio, status (`uploading`\|`ready`\|`failed`\|`expired`), expires_at, meta jsonb | Every media file |
-| `reference_videos` | owner_id, asset_id, source_url, platform, status, derived jsonb (S3 keys of scenes/audio/transcript/color/sheets), error | One per analyzed reference. Not named `references`: that is a reserved word in Postgres. The API path stays `/references`. |
+| `assets` | owner_id, kind (`reference`\|`footage`\|`music`\|`sfx`\|`render`\|`image`), s3_key, proxy_key, content_hash, duration_s, width, height, fps, has_audio, status (`uploading`\|`ready`\|`failed`\|`expired`), expires_at, meta jsonb | Every media file. `ready` = the original is stored; the proxy exists once `proxy_key` is set. `expired` is applied on read when `expires_at` has passed. |
+| `reference_videos` | owner_id, asset_id, source_url, platform, status (`queued`\|`ingesting`\|`ingested`\|`analyzing`\|`ready`\|`failed`), derived jsonb (S3 keys of scenes/audio/transcript/color/sheets), error jsonb (`{code, message, hint}`) | One per analyzed reference. Not named `references`: that is a reserved word in Postgres. The API path stays `/references`. |
 | `style_profiles` | owner_id, name, schema_version, data jsonb, source_reference_ids uuid[], is_blend bool | Editable; `data.user_overrides` holds edits |
 | `projects` | owner_id, style_profile_id, title, brief jsonb, status (`planning`\|`shooting`\|`editing`\|`done`), share_token text unique null | `share_token` backs the read-only plan link |
 | `shoot_plans` | project_id, version, data jsonb, is_current bool | New version on regenerate |

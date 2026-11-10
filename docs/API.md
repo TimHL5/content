@@ -11,16 +11,16 @@ Errors: `{"error": {"code": "INGEST_PRIVATE_VIDEO", "message": "…", "hint": "U
 ## Uploads
 | Method | Path | Body → Response |
 |---|---|---|
-| POST | `/uploads` | `{filename, size, content_type, kind}` → `{asset_id, parts:[{part_number, url}], upload_id}` |
-| POST | `/uploads/{asset_id}/complete` | `{upload_id, parts:[{part_number, etag}]}` → `{asset}` + enqueues proxy |
+| POST | `/uploads` | `{filename, size, content_type, kind}` → 201 `{asset_id, upload_id, part_size, parts:[{part_number, url}]}`. `kind`: `reference` \| `music` \| `sfx` (footage uploads arrive with projects in Phase 5). The browser PUTs each `part_size` slice to its URL and keeps the `ETag` response header. |
+| POST | `/uploads/{asset_id}/complete` | `{upload_id, parts:[{part_number, etag}]}` → `{asset}` (status `ready`). Safe to retry. Processing starts when the asset is used: `POST /references` for references, `POST /projects/{id}/footage` for footage. |
 | GET | `/assets/{asset_id}` | — → `{asset, url, proxy_url}` (presigned GETs, used by the players) |
 
 ## References & Styles
 | Method | Path | Notes |
 |---|---|---|
-| POST | `/references` | `{url}` or `{asset_id}` → 202, starts the analysis DAG |
+| POST | `/references` | `{url}` or `{asset_id}` (exactly one) → 202 `{job_id, resource_id}`; starts ingest (Phase 1) and the analysis DAG (Phase 2). Errors: `INGEST_DISABLED` (403), `INGEST_UNSUPPORTED_URL` (422). |
 | GET | `/references` | list |
-| GET | `/references/{id}` | status + derived keys |
+| GET | `/references/{id}` | `{id, status, platform, source_url, asset_id, job_id, error}`. `status`: `queued` → `ingesting` → `ingested` → `analyzing` → `ready`, or `failed` with `error: {code, message, hint}` (`INGEST_PRIVATE_VIDEO`, `INGEST_LOGIN_REQUIRED`, `INGEST_REMOVED`, `INGEST_REGION_LOCKED`, `INGEST_TOO_LONG`, `INGEST_TOO_LARGE`, `INGEST_NOT_A_VIDEO`, `INGEST_FAILED`). |
 | GET | `/style-profiles` | list (library) |
 | POST | `/style-profiles` | `{reference_id, name}` (auto-created on analysis success) or `{blend:[{profile_id, weight}]}` |
 | GET | `/style-profiles/{id}` | profile with overrides applied + contact-sheet URLs |

@@ -32,7 +32,7 @@ Check boxes as tasks complete. **Current phase: 1**
 - [x] `media.probe()` (ffprobe → duration, w/h, fps, rotation, audio streams).
 - [x] Proxy transcode: 540p H.264 (`-preset veryfast`), CFR 30fps, AAC 48k; plus a 16k mono WAV for speech.
 - [x] S3 lifecycle rule: `references/raw/*` expires in 24h.
-- [ ] Web: "New Style" page with URL paste box and drag-and-drop, live job progress, proxy player.
+- [x] Web: "New Style" page with URL paste box and drag-and-drop, live job progress, proxy player.
 
 **Done when:** a TikTok URL and an uploaded MP4 both produce a playable proxy within 30s for a 30s clip (target <15s, see ARCHITECTURE.md); failed URLs show a clear message and offer upload.
 
@@ -171,3 +171,13 @@ Spec: `docs/EDIT_ENGINE_SPEC.md`
 - 2026-11-10 — Dev migrations run automatically when the `api` container starts — required for "fresh clone → make dev → green".
 - 2026-11-10 — shadcn/ui components (`card`, `badge`, `button`) are written in the shadcn conventions with `components.json` in place, so `shadcn add` works for later components.
 - 2026-11-10 — New libraries. API: fastapi, uvicorn, pydantic-settings, sqlalchemy, alembic, psycopg, celery, redis, boto3, sse-starlette; dev: pytest, httpx, ruff, mypy. Web: next 15, react 19, @tanstack/react-query, tailwindcss 4, class-variance-authority, clsx, tailwind-merge, lucide-react, vitest, json-schema-to-typescript — all named in or implied by the stack in CLAUDE.md except sse-starlette (SSE responses with keep-alive pings) and boto3 (S3 client).
+- 2026-11-10 — Phase 1: `POST /uploads/{id}/complete` only marks the asset `ready`; processing starts from the endpoint that uses the asset (`POST /references` now, footage in Phase 5) — one place owns the pipeline and its job id; avoids two jobs racing on the same file.
+- 2026-11-10 — Pipelines are DB-driven (`start_pipeline`: parent row + one child row per stage, next stage sent on success) rather than Celery chains — the client follows one job id, progress is a weighted sum, and state survives a broker flush. Sequential only for now; parallel groups come with the Phase 2 DAG.
+- 2026-11-10 — URL ingest accepts only allow-listed hosts and path shapes and rewrites them to one canonical URL per video (`ingest/urls.py`) — blocks SSRF via the downloader and strips tracking parameters.
+- 2026-11-10 — `S3_PUBLIC_ENDPOINT` added: presigned URLs are signed for the host the browser calls, which differs from the in-cluster endpoint.
+- 2026-11-10 — Reference uploads accept MP4/MOV/M4V/WebM up to 200 MB; duration (≤3 min) is checked by probing after upload/download, and by yt-dlp metadata before downloading. Footage uploads are rejected until Phase 5 (their S3 key needs a project id).
+- 2026-11-10 — Speech WAV for references lives at `references/proxy/{asset_id}.wav` so it expires with the proxy. Lifecycle rules are applied by `scripts/bootstrap_storage.py`; the abort-stale-multipart action rides on the expiry rules because MinIO rejects a rule containing only that action.
+- 2026-11-10 — Proxy: short side 540 (never upscaled), CFR 30, `-g 30` (keyframe every second for accurate seeking in analysis), AAC 48k stereo; rotation is baked in.
+- 2026-11-10 — `reference_videos.error` is JSONB `{code, message, hint}`; job errors show an exception's `user_message` when it has one — users see "That video is private." rather than an exception name. Raw downloader text goes to logs only.
+- 2026-11-10 — New library: yt-dlp (named in the stack), imported only inside the provider so API processes don't load it.
+- 2026-11-10 — ruff E501 is ignored under `tests/` — parametrize tables of URLs and error strings are clearer on one line.
