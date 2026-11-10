@@ -1,0 +1,337 @@
+{
+  "$defs": {
+    "CheckResult": {
+      "properties": {
+        "error": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Error"
+        },
+        "latency_ms": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Latency Ms"
+        },
+        "ok": {
+          "title": "Ok",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "ok"
+      ],
+      "title": "CheckResult",
+      "type": "object"
+    },
+    "ErrorBody": {
+      "properties": {
+        "code": {
+          "title": "Code",
+          "type": "string"
+        },
+        "hint": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Hint"
+        },
+        "message": {
+          "title": "Message",
+          "type": "string"
+        }
+      },
+      "required": [
+        "code",
+        "message"
+      ],
+      "title": "ErrorBody",
+      "type": "object"
+    },
+    "ErrorEnvelope": {
+      "description": "Shape of every non-2xx API response (docs/API.md).",
+      "properties": {
+        "error": {
+          "$ref": "#/$defs/ErrorBody"
+        }
+      },
+      "required": [
+        "error"
+      ],
+      "title": "ErrorEnvelope",
+      "type": "object"
+    },
+    "HealthChecks": {
+      "properties": {
+        "db": {
+          "$ref": "#/$defs/CheckResult"
+        },
+        "redis": {
+          "$ref": "#/$defs/CheckResult"
+        },
+        "s3": {
+          "$ref": "#/$defs/CheckResult"
+        }
+      },
+      "required": [
+        "db",
+        "redis",
+        "s3"
+      ],
+      "title": "HealthChecks",
+      "type": "object"
+    },
+    "HealthOut": {
+      "properties": {
+        "checks": {
+          "$ref": "#/$defs/HealthChecks"
+        },
+        "status": {
+          "enum": [
+            "ok",
+            "degraded"
+          ],
+          "title": "Status",
+          "type": "string"
+        }
+      },
+      "required": [
+        "status",
+        "checks"
+      ],
+      "title": "HealthOut",
+      "type": "object"
+    },
+    "JobAccepted": {
+      "description": "Body of every `202` response for a long-running operation.",
+      "properties": {
+        "job_id": {
+          "format": "uuid",
+          "title": "Job Id",
+          "type": "string"
+        },
+        "resource_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Resource Id"
+        }
+      },
+      "required": [
+        "job_id"
+      ],
+      "title": "JobAccepted",
+      "type": "object"
+    },
+    "JobEvent": {
+      "description": "Progress event published on Redis channel `job:{id}` and relayed over SSE.",
+      "properties": {
+        "error": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Error"
+        },
+        "eta_s": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Eta S"
+        },
+        "job_id": {
+          "format": "uuid",
+          "title": "Job Id",
+          "type": "string"
+        },
+        "progress": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Progress",
+          "type": "number"
+        },
+        "status": {
+          "enum": [
+            "queued",
+            "running",
+            "succeeded",
+            "failed"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "step": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Step"
+        }
+      },
+      "required": [
+        "job_id",
+        "status",
+        "progress"
+      ],
+      "title": "JobEvent",
+      "type": "object"
+    },
+    "JobOut": {
+      "properties": {
+        "attempts": {
+          "title": "Attempts",
+          "type": "integer"
+        },
+        "created_at": {
+          "format": "date-time",
+          "title": "Created At",
+          "type": "string"
+        },
+        "error": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Error"
+        },
+        "id": {
+          "format": "uuid",
+          "title": "Id",
+          "type": "string"
+        },
+        "input": {
+          "additionalProperties": true,
+          "title": "Input",
+          "type": "object"
+        },
+        "output": {
+          "anyOf": [
+            {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Output"
+        },
+        "parent_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Parent Id"
+        },
+        "progress": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Progress",
+          "type": "number"
+        },
+        "status": {
+          "enum": [
+            "queued",
+            "running",
+            "succeeded",
+            "failed"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "step": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Step"
+        },
+        "type": {
+          "title": "Type",
+          "type": "string"
+        },
+        "updated_at": {
+          "format": "date-time",
+          "title": "Updated At",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "type",
+        "status",
+        "progress",
+        "input",
+        "attempts",
+        "created_at",
+        "updated_at"
+      ],
+      "title": "JobOut",
+      "type": "object"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Generated from apps/api/stylecut/schemas. Do not edit.",
+  "title": "StyleCutSchemas",
+  "type": "object"
+}
