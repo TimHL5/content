@@ -170,3 +170,44 @@ class LlmCache(Base):
 
     key: Mapped[str] = mapped_column(String(64), unique=True, nullable=False)
     output: Mapped[dict[str, Any]] = mapped_column(JSONB, nullable=False)
+
+
+PROJECT_STATUSES = ("planning", "shooting", "editing", "done")
+
+
+class Project(Base):
+    """One video the creator is making in a chosen style."""
+
+    __tablename__ = "projects"
+    __table_args__ = (
+        CheckConstraint(_in("status", PROJECT_STATUSES), name="ck_projects_status"),
+        Index("ix_projects_owner_created", "owner_id", "created_at"),
+    )
+
+    owner_id: Mapped[UUID] = mapped_column(
+        PGUUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False
+    )
+    style_profile_id: Mapped[UUID | None] = mapped_column(
+        PGUUID(as_uuid=True), ForeignKey("style_profiles.id", ondelete="SET NULL")
+    )
+    title: Mapped[str] = mapped_column(String(200), nullable=False)
+    brief: Mapped[dict[str, Any]] = mapped_column(JSONB, nullable=False)
+    status: Mapped[str] = mapped_column(String(16), nullable=False, server_default="planning")
+    # Backs the read-only plan link. NULL until the creator shares the plan.
+    share_token: Mapped[str | None] = mapped_column(String(64), unique=True)
+
+
+class ShootPlanRow(Base):
+    """A version of a project's plan. `data` holds a validated `schemas.shoot_plan.ShootPlan`."""
+
+    __tablename__ = "shoot_plans"
+    __table_args__ = (
+        Index("uq_shoot_plans_project_version", "project_id", "version", unique=True),
+    )
+
+    project_id: Mapped[UUID] = mapped_column(
+        PGUUID(as_uuid=True), ForeignKey("projects.id", ondelete="CASCADE"), nullable=False
+    )
+    version: Mapped[int] = mapped_column(Integer, nullable=False)
+    data: Mapped[dict[str, Any]] = mapped_column(JSONB, nullable=False)
+    is_current: Mapped[bool] = mapped_column(Boolean, nullable=False, server_default=text("true"))

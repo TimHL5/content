@@ -28,7 +28,12 @@ def create_celery() -> Celery:
         "stylecut",
         broker=settings.redis_url,
         backend=settings.redis_url,  # needed for chords/groups in the analysis DAG
-        include=["stylecut.jobs.demo", "stylecut.jobs.ingest", "stylecut.jobs.analysis"],
+        include=[
+            "stylecut.jobs.demo",
+            "stylecut.jobs.ingest",
+            "stylecut.jobs.analysis",
+            "stylecut.jobs.planning",
+        ],
     )
     app.conf.update(
         task_queues=[Queue(name) for name in QUEUES],

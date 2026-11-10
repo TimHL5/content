@@ -63,7 +63,7 @@ Spec: `docs/STYLE_PROFILE_SPEC.md`
 Spec: `docs/PLAN_MODE_SPEC.md`
 
 - [x] Pydantic `ProjectBrief`, `ShootPlan` v1 + types.
-- [ ] Projects CRUD (`projects` table, brief form: topic, key points, optional script, target length, constraints).
+- [x] Projects CRUD (`projects` table, brief form: topic, key points, optional script, target length, constraints).
 - [ ] Word-budget calculator: `target_duration × profile.speech.wpm` minus non-speech beats.
 - [ ] `planning/generate.py`: `shoot_plan` prompt → ShootPlan. Validate that beat timings sum to the target ±10% and that every must-have beat from the profile has ≥1 shot. Repair loop on failure.
 - [ ] Shoot-order optimizer: group shots by `setup_id` (location+framing+lighting) so the creator changes setups as rarely as possible.
