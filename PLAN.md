@@ -1,7 +1,7 @@
 # PLAN.md — StyleCut Build Plan
 
 Each phase ends with something demoable. Each task is sized for about one Claude Code session.
-Check boxes as tasks complete. **Current phase: 2**
+Check boxes as tasks complete. **Current phase: 3**
 
 ---
 
@@ -62,7 +62,7 @@ Spec: `docs/STYLE_PROFILE_SPEC.md`
 **Goal:** the user picks a style, describes their video, and gets a shoot-ready plan they can follow on their phone.
 Spec: `docs/PLAN_MODE_SPEC.md`
 
-- [ ] Pydantic `ProjectBrief`, `ShootPlan` v1 + types.
+- [x] Pydantic `ProjectBrief`, `ShootPlan` v1 + types.
 - [ ] Projects CRUD (`projects` table, brief form: topic, key points, optional script, target length, constraints).
 - [ ] Word-budget calculator: `target_duration × profile.speech.wpm` minus non-speech beats.
 - [ ] `planning/generate.py`: `shoot_plan` prompt → ShootPlan. Validate that beat timings sum to the target ±10% and that every must-have beat from the profile has ≥1 shot. Repair loop on failure.

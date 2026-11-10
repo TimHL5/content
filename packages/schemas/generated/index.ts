@@ -54,6 +54,12 @@ export type Look = string;
 export type LumaMean = number;
 export type Saturation = number;
 export type Warmth = number;
+export type CanShowFace = boolean;
+export type Crew = "solo" | "two_person";
+export type Gear = ("phone" | "tripod" | "gimbal" | "lav_mic" | "ring_light" | "camera")[];
+export type HasScreenContent = boolean;
+export type Locations = string[];
+export type MaxSetups = number | null;
 export type BrollRatio = number;
 export type JumpCutSilences = boolean;
 export type LoopEnding = boolean;
@@ -100,6 +106,8 @@ export type Status3 = "queued" | "running" | "succeeded" | "failed";
 export type Step1 = string | null;
 export type Type1 = string;
 export type UpdatedAt = string;
+export type Id3 = string;
+export type Text = string;
 export type EndS1 = number;
 export type Kind1 = "title" | "label" | "arrow" | "emoji" | "progress_bar" | "sticker" | "other";
 export type Position = "top" | "center" | "bottom" | "follow";
@@ -116,28 +124,113 @@ export type Median = number;
 export type Min = number;
 export type P10 = number;
 export type P90 = number;
+export type Function1 = "hook" | "context" | "tension" | "value" | "proof" | "twist" | "payoff" | "cta" | "loop";
+export type Id4 = string;
+export type MustHave1 = boolean;
+export type Beats = PlanBeat[];
+export type MaxShotS1 = number;
+export type Name = string;
+export type Wpm = number;
+export type Alternatives = string[];
+export type BeatId = string;
+export type CameraMotion = "static" | "handheld" | "push_in" | "pull_out" | "pan" | "whip" | "tracking";
+export type Description = string;
+export type Direction = string;
+export type DurationS2 = number;
+export type Framing = "ecu" | "cu" | "mcu" | "ms" | "ws" | "overhead" | "pov" | "screen";
+export type Id5 = string;
+export type Kind2 = "a_roll" | "b_roll" | "screen" | "text_card" | "reaction" | "product" | "pov" | "other";
+export type LineIds = string[];
+export type Priority = "must" | "nice";
+export type RecordS = number;
+export type ReferenceShotIdx = number | null;
+export type SetupId = string;
+export type Takes = number;
+export type WillBeCut = boolean;
+export type Audience = string | null;
+export type KeyPoints = string[];
+export type Script = string | null;
+export type TargetDurationS = number | null;
+export type Tone = string | null;
+export type Topic = string;
+export type StyleProfileId = string;
+export type Title = string;
+export type CreatedAt2 = string;
+export type HasPlan = boolean;
+export type Id6 = string;
+export type PlanJobId = string | null;
+export type Status4 = "planning" | "shooting" | "editing" | "done";
+export type StyleName = string | null;
+export type StyleProfileId1 = string | null;
+export type Title1 = string;
+export type UpdatedAt1 = string;
+export type Title2 = string | null;
 export type AssetId = string | null;
 export type Url1 = string | null;
 export type AssetId1 = string;
-export type CreatedAt2 = string;
-export type Id3 = string;
+export type CreatedAt3 = string;
+export type Id7 = string;
 export type JobId2 = string | null;
 export type Platform = "tiktok" | "instagram" | "youtube" | "upload";
 export type SourceUrl = string | null;
-export type Status4 = "queued" | "ingesting" | "ingested" | "analyzing" | "ready" | "failed";
-export type StyleProfileId = string | null;
-export type BeatId = string | null;
-export type CameraMotion = "static" | "handheld" | "push_in" | "pull_out" | "pan" | "whip" | "tracking";
-export type Description = string;
+export type Status5 = "queued" | "ingesting" | "ingested" | "analyzing" | "ready" | "failed";
+export type StyleProfileId2 = string | null;
+export type Instruction = string | null;
+export type Scope = "hook" | "beat" | "shot" | "all";
+export type TargetId = string | null;
+export type BeatId1 = string;
+export type DeliveryNote = string | null;
+export type EmphasisWords = string[];
+export type EstDurationS = number;
+export type Id8 = string;
+export type Text1 = string;
+export type Audio1 = string;
+export type FramingSummary = string;
+export type Id9 = string;
+export type Lighting = string;
+export type Location = string;
+export type Orientation = "vertical";
+export type Props = string[];
+export type Path = string;
+export type Token = string;
+export type ChecklistNotes = string[];
+export type MusicBrief = string | null;
+export type ProjectId = string;
+export type SchemaVersion = 1;
+export type Script1 = ScriptLine[];
+export type Setups = Setup[];
+export type ShootOrder = string[];
+export type Shots = PlannedShot[];
+export type StyleProfileId3 = string;
+export type TargetDurationS1 = number;
+export type TitleOptions = string[];
+export type Warnings = string[];
+export type WordBudget = number;
+export type ProjectId1 = string;
+export type Title3 = string;
+export type UpdatedAt2 = string;
+export type Version = number;
+export type WordCount = number;
+export type Lines1 = LineEdit[] | null;
+export type ShotOrder = string[] | null;
+export type Shots1 = ShotEdit[] | null;
+export type Description1 = string | null;
+export type Direction1 = string | null;
+export type DurationS3 = number | null;
+export type Id10 = string;
+export type Priority1 = ("must" | "nice") | null;
+export type BeatId2 = string | null;
+export type CameraMotion1 = "static" | "handheld" | "push_in" | "pull_out" | "pan" | "whip" | "tracking";
+export type Description2 = string;
 export type EndS2 = number;
-export type Framing = "ecu" | "cu" | "mcu" | "ms" | "ws" | "overhead" | "pov" | "screen";
+export type Framing1 = "ecu" | "cu" | "mcu" | "ms" | "ws" | "overhead" | "pov" | "screen";
 export type Idx = number;
-export type Kind2 = "a_roll" | "b_roll" | "screen" | "text_card" | "reaction" | "product" | "pov" | "other";
+export type Kind3 = "a_roll" | "b_roll" | "screen" | "text_card" | "reaction" | "product" | "pov" | "other";
 export type MotionScore = number;
 export type PunchIn = boolean;
 export type StartS2 = number;
 export type Aspect = "9:16" | "1:1" | "4:5" | "16:9";
-export type DurationS2 = number;
+export type DurationS4 = number;
 export type Fps1 = number;
 export type Platform1 = "tiktok" | "instagram" | "youtube" | "upload";
 export type Url2 = string | null;
@@ -148,28 +241,28 @@ export type PauseMsP50 = number;
 export type PauseMsP90 = number;
 export type Present1 = boolean;
 export type VoiceType = "on_camera" | "voiceover" | "mixed" | "none";
-export type Wpm = number;
-export type Beats = Beat[];
-export type Id4 = string;
-export type Name = string;
-export type Overlays = Overlay[];
-export type SchemaVersion = 1;
-export type Shots = Shot[];
-export type Summary = string;
-export type CreatedAt3 = string;
-export type Id5 = string;
+export type Wpm1 = number;
+export type Beats1 = Beat[];
+export type Id11 = string;
 export type Name1 = string;
+export type Overlays = Overlay[];
+export type SchemaVersion1 = 1;
+export type Shots2 = Shot[];
+export type Summary = string;
+export type CreatedAt4 = string;
+export type Id12 = string;
+export type Name2 = string;
 export type SheetUrls = string[];
-export type UpdatedAt1 = string;
-export type Name2 = string | null;
+export type UpdatedAt3 = string;
+export type Name3 = string | null;
 export type Overrides1 = {
   [k: string]: unknown;
 } | null;
-export type CreatedAt4 = string;
-export type DurationS3 = number;
+export type CreatedAt5 = string;
+export type DurationS5 = number;
 export type HookType = string;
-export type Id6 = string;
-export type Name3 = string;
+export type Id13 = string;
+export type Name4 = string;
 export type Platform2 = string;
 export type ShotCount1 = number;
 export type Summary1 = string;
@@ -182,7 +275,7 @@ export type PartNumber = number;
 export type UploadId = string;
 export type ContentType = string;
 export type Filename = string;
-export type Kind3 = "reference" | "music" | "sfx";
+export type Kind4 = "reference" | "music" | "sfx";
 export type Size = number;
 export type AssetId2 = string;
 export type PartSize = number;
@@ -296,6 +389,18 @@ export interface Eq {
 }
 /**
  * This interface was referenced by `StyleCutSchemas`'s JSON-Schema
+ * via the `definition` "Constraints".
+ */
+export interface Constraints {
+  can_show_face?: CanShowFace;
+  crew?: Crew;
+  gear?: Gear;
+  has_screen_content?: HasScreenContent;
+  locations?: Locations;
+  max_setups?: MaxSetups;
+}
+/**
+ * This interface was referenced by `StyleCutSchemas`'s JSON-Schema
  * via the `definition` "EditingRules".
  */
 export interface EditingRules {
@@ -400,6 +505,14 @@ export interface Input {
 }
 /**
  * This interface was referenced by `StyleCutSchemas`'s JSON-Schema
+ * via the `definition` "LineEdit".
+ */
+export interface LineEdit {
+  id: Id3;
+  text: Text;
+}
+/**
+ * This interface was referenced by `StyleCutSchemas`'s JSON-Schema
  * via the `definition` "Overlay".
  */
 export interface Overlay {
@@ -434,6 +547,103 @@ export interface Stats {
   p90: P90;
 }
 /**
+ * This interface was referenced by `StyleCutSchemas`'s JSON-Schema
+ * via the `definition` "PlanBeat".
+ */
+export interface PlanBeat {
+  function: Function1;
+  id: Id4;
+  must_have: MustHave1;
+}
+/**
+ * The few style facts the plan screens need, so they don't load the whole profile.
+ *
+ * This interface was referenced by `StyleCutSchemas`'s JSON-Schema
+ * via the `definition` "PlanStyle".
+ */
+export interface PlanStyle {
+  beats: Beats;
+  max_shot_s: MaxShotS1;
+  name: Name;
+  wpm: Wpm;
+}
+/**
+ * This interface was referenced by `StyleCutSchemas`'s JSON-Schema
+ * via the `definition` "PlannedShot".
+ */
+export interface PlannedShot {
+  alternatives?: Alternatives;
+  beat_id: BeatId;
+  camera_motion: CameraMotion;
+  description: Description;
+  direction: Direction;
+  duration_s: DurationS2;
+  framing: Framing;
+  id: Id5;
+  kind: Kind2;
+  line_ids?: LineIds;
+  priority: Priority;
+  record_s: RecordS;
+  reference_shot_idx?: ReferenceShotIdx;
+  setup_id: SetupId;
+  takes: Takes;
+  will_be_cut?: WillBeCut;
+}
+/**
+ * This interface was referenced by `StyleCutSchemas`'s JSON-Schema
+ * via the `definition` "ProjectBrief".
+ */
+export interface ProjectBrief {
+  audience?: Audience;
+  constraints?: Constraints1;
+  key_points?: KeyPoints;
+  script?: Script;
+  target_duration_s?: TargetDurationS;
+  tone?: Tone;
+  topic: Topic;
+}
+export interface Constraints1 {
+  can_show_face?: CanShowFace;
+  crew?: Crew;
+  gear?: Gear;
+  has_screen_content?: HasScreenContent;
+  locations?: Locations;
+  max_setups?: MaxSetups;
+}
+/**
+ * This interface was referenced by `StyleCutSchemas`'s JSON-Schema
+ * via the `definition` "ProjectCreateIn".
+ */
+export interface ProjectCreateIn {
+  brief: ProjectBrief;
+  style_profile_id: StyleProfileId;
+  title: Title;
+}
+/**
+ * This interface was referenced by `StyleCutSchemas`'s JSON-Schema
+ * via the `definition` "ProjectOut".
+ */
+export interface ProjectOut {
+  brief: ProjectBrief;
+  created_at: CreatedAt2;
+  has_plan: HasPlan;
+  id: Id6;
+  plan_job_id?: PlanJobId;
+  status: Status4;
+  style_name: StyleName;
+  style_profile_id: StyleProfileId1;
+  title: Title1;
+  updated_at: UpdatedAt1;
+}
+/**
+ * This interface was referenced by `StyleCutSchemas`'s JSON-Schema
+ * via the `definition` "ProjectPatch".
+ */
+export interface ProjectPatch {
+  brief?: ProjectBrief | null;
+  title?: Title2;
+}
+/**
  * Exactly one of `url` (platform link) or `asset_id` (an uploaded reference file).
  *
  * This interface was referenced by `StyleCutSchemas`'s JSON-Schema
@@ -449,27 +659,123 @@ export interface ReferenceCreateIn {
  */
 export interface ReferenceOut {
   asset_id: AssetId1;
-  created_at: CreatedAt2;
+  created_at: CreatedAt3;
   error?: ErrorBody | null;
-  id: Id3;
+  id: Id7;
   job_id?: JobId2;
   platform: Platform;
   source_url?: SourceUrl;
-  status: Status4;
-  style_profile_id?: StyleProfileId;
+  status: Status5;
+  style_profile_id?: StyleProfileId2;
+}
+/**
+ * This interface was referenced by `StyleCutSchemas`'s JSON-Schema
+ * via the `definition` "RegenerateIn".
+ */
+export interface RegenerateIn {
+  instruction?: Instruction;
+  scope: Scope;
+  target_id?: TargetId;
+}
+/**
+ * This interface was referenced by `StyleCutSchemas`'s JSON-Schema
+ * via the `definition` "ScriptLine".
+ */
+export interface ScriptLine {
+  beat_id: BeatId1;
+  delivery_note?: DeliveryNote;
+  emphasis_words?: EmphasisWords;
+  est_duration_s: EstDurationS;
+  id: Id8;
+  text: Text1;
+}
+/**
+ * This interface was referenced by `StyleCutSchemas`'s JSON-Schema
+ * via the `definition` "Setup".
+ */
+export interface Setup {
+  audio: Audio1;
+  framing_summary: FramingSummary;
+  id: Id9;
+  lighting: Lighting;
+  location: Location;
+  orientation?: Orientation;
+  props?: Props;
+}
+/**
+ * This interface was referenced by `StyleCutSchemas`'s JSON-Schema
+ * via the `definition` "ShareOut".
+ */
+export interface ShareOut {
+  path: Path;
+  token: Token;
+}
+/**
+ * This interface was referenced by `StyleCutSchemas`'s JSON-Schema
+ * via the `definition` "ShootPlan".
+ */
+export interface ShootPlan {
+  checklist_notes?: ChecklistNotes;
+  music_brief?: MusicBrief;
+  project_id: ProjectId;
+  schema_version?: SchemaVersion;
+  script: Script1;
+  setups: Setups;
+  shoot_order: ShootOrder;
+  shots: Shots;
+  style_profile_id: StyleProfileId3;
+  target_duration_s: TargetDurationS1;
+  title_options: TitleOptions;
+  warnings?: Warnings;
+  word_budget: WordBudget;
+}
+/**
+ * This interface was referenced by `StyleCutSchemas`'s JSON-Schema
+ * via the `definition` "ShootPlanOut".
+ */
+export interface ShootPlanOut {
+  plan: ShootPlan;
+  project_id: ProjectId1;
+  style: PlanStyle;
+  title: Title3;
+  updated_at: UpdatedAt2;
+  version: Version;
+  word_count: WordCount;
+}
+/**
+ * Manual edits. Each is optional; the plan is re-derived and re-validated afterwards.
+ *
+ * This interface was referenced by `StyleCutSchemas`'s JSON-Schema
+ * via the `definition` "ShootPlanPatch".
+ */
+export interface ShootPlanPatch {
+  lines?: Lines1;
+  shot_order?: ShotOrder;
+  shots?: Shots1;
+}
+/**
+ * This interface was referenced by `StyleCutSchemas`'s JSON-Schema
+ * via the `definition` "ShotEdit".
+ */
+export interface ShotEdit {
+  description?: Description1;
+  direction?: Direction1;
+  duration_s?: DurationS3;
+  id: Id10;
+  priority?: Priority1;
 }
 /**
  * This interface was referenced by `StyleCutSchemas`'s JSON-Schema
  * via the `definition` "Shot".
  */
 export interface Shot {
-  beat_id?: BeatId;
-  camera_motion: CameraMotion;
-  description: Description;
+  beat_id?: BeatId2;
+  camera_motion: CameraMotion1;
+  description: Description2;
   end_s: EndS2;
-  framing: Framing;
+  framing: Framing1;
   idx: Idx;
-  kind: Kind2;
+  kind: Kind3;
   motion_score: MotionScore;
   punch_in: PunchIn;
   start_s: StartS2;
@@ -480,7 +786,7 @@ export interface Shot {
  */
 export interface SourceInfo {
   aspect: Aspect;
-  duration_s: DurationS2;
+  duration_s: DurationS4;
   fps: Fps1;
   platform: Platform1;
   url?: Url2;
@@ -497,7 +803,7 @@ export interface Speech {
   pause_ms_p90: PauseMsP90;
   present: Present1;
   voice_type: VoiceType;
-  wpm: Wpm;
+  wpm: Wpm1;
 }
 /**
  * This interface was referenced by `StyleCutSchemas`'s JSON-Schema
@@ -505,18 +811,18 @@ export interface Speech {
  */
 export interface StyleProfile {
   audio: Audio;
-  beats: Beats;
+  beats: Beats1;
   captions: CaptionStyle;
   color: Color;
   confidence: Confidence;
   hook: Hook;
-  id: Id4;
-  name: Name;
+  id: Id11;
+  name: Name1;
   overlays: Overlays;
   pacing: Pacing;
   rules: EditingRules;
-  schema_version?: SchemaVersion;
-  shots: Shots;
+  schema_version?: SchemaVersion1;
+  shots: Shots2;
   source: SourceInfo;
   speech: Speech;
   summary: Summary;
@@ -535,13 +841,13 @@ export interface UserOverrides {
  * via the `definition` "StyleProfileOut".
  */
 export interface StyleProfileOut {
-  created_at: CreatedAt3;
-  id: Id5;
-  name: Name1;
+  created_at: CreatedAt4;
+  id: Id12;
+  name: Name2;
   overrides: Overrides;
   profile: StyleProfile;
   sheet_urls: SheetUrls;
-  updated_at: UpdatedAt1;
+  updated_at: UpdatedAt3;
 }
 export interface Overrides {
   [k: string]: unknown;
@@ -554,7 +860,7 @@ export interface Overrides {
  * via the `definition` "StyleProfilePatch".
  */
 export interface StyleProfilePatch {
-  name?: Name2;
+  name?: Name3;
   overrides?: Overrides1;
 }
 /**
@@ -562,11 +868,11 @@ export interface StyleProfilePatch {
  * via the `definition` "StyleProfileSummary".
  */
 export interface StyleProfileSummary {
-  created_at: CreatedAt4;
-  duration_s: DurationS3;
+  created_at: CreatedAt5;
+  duration_s: DurationS5;
   hook_type: HookType;
-  id: Id6;
-  name: Name3;
+  id: Id13;
+  name: Name4;
   platform: Platform2;
   shot_count: ShotCount1;
   summary: Summary1;
@@ -601,7 +907,7 @@ export interface UploadCompleteOut {
 export interface UploadCreateIn {
   content_type?: ContentType;
   filename: Filename;
-  kind: Kind3;
+  kind: Kind4;
   size: Size;
 }
 /**

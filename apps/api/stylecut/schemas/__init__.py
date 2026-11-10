@@ -18,6 +18,16 @@ from stylecut.schemas.media import (
     UploadCreateIn,
     UploadCreateOut,
 )
+from stylecut.schemas.project_api import (
+    ProjectCreateIn,
+    ProjectOut,
+    ProjectPatch,
+    RegenerateIn,
+    ShareOut,
+    ShootPlanOut,
+    ShootPlanPatch,
+)
+from stylecut.schemas.shoot_plan import ProjectBrief, ShootPlan
 from stylecut.schemas.style_profile import StyleProfile
 from stylecut.schemas.style_profile_api import (
     StyleProfileOut,
@@ -33,7 +43,16 @@ EXPORTED_MODELS: list[type[BaseModel]] = [
     JobEvent,
     JobOut,
     ReferenceCreateIn,
+    ProjectBrief,
+    ProjectCreateIn,
+    ProjectOut,
+    ProjectPatch,
     ReferenceOut,
+    RegenerateIn,
+    ShareOut,
+    ShootPlan,
+    ShootPlanOut,
+    ShootPlanPatch,
     StyleProfile,
     StyleProfileOut,
     StyleProfilePatch,

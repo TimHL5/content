@@ -510,6 +510,71 @@
       "title": "Color",
       "type": "object"
     },
+    "Constraints": {
+      "properties": {
+        "can_show_face": {
+          "default": true,
+          "title": "Can Show Face",
+          "type": "boolean"
+        },
+        "crew": {
+          "default": "solo",
+          "enum": [
+            "solo",
+            "two_person"
+          ],
+          "title": "Crew",
+          "type": "string"
+        },
+        "gear": {
+          "default": [
+            "phone"
+          ],
+          "items": {
+            "enum": [
+              "phone",
+              "tripod",
+              "gimbal",
+              "lav_mic",
+              "ring_light",
+              "camera"
+            ],
+            "type": "string"
+          },
+          "title": "Gear",
+          "type": "array"
+        },
+        "has_screen_content": {
+          "default": false,
+          "title": "Has Screen Content",
+          "type": "boolean"
+        },
+        "locations": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Locations",
+          "type": "array"
+        },
+        "max_setups": {
+          "anyOf": [
+            {
+              "maximum": 20,
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Max Setups"
+        }
+      },
+      "title": "Constraints",
+      "type": "object"
+    },
     "EditingRules": {
       "properties": {
         "broll_ratio": {
@@ -922,6 +987,26 @@
       "title": "JobOut",
       "type": "object"
     },
+    "LineEdit": {
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "text": {
+          "maxLength": 2000,
+          "minLength": 1,
+          "title": "Text",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "text"
+      ],
+      "title": "LineEdit",
+      "type": "object"
+    },
     "Overlay": {
       "properties": {
         "end_s": {
@@ -1030,6 +1115,437 @@
         "max_shot_s"
       ],
       "title": "Pacing",
+      "type": "object"
+    },
+    "PlanBeat": {
+      "properties": {
+        "function": {
+          "enum": [
+            "hook",
+            "context",
+            "tension",
+            "value",
+            "proof",
+            "twist",
+            "payoff",
+            "cta",
+            "loop"
+          ],
+          "title": "Function",
+          "type": "string"
+        },
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "must_have": {
+          "title": "Must Have",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "id",
+        "function",
+        "must_have"
+      ],
+      "title": "PlanBeat",
+      "type": "object"
+    },
+    "PlanStyle": {
+      "description": "The few style facts the plan screens need, so they don't load the whole profile.",
+      "properties": {
+        "beats": {
+          "items": {
+            "$ref": "#/$defs/PlanBeat"
+          },
+          "title": "Beats",
+          "type": "array"
+        },
+        "max_shot_s": {
+          "title": "Max Shot S",
+          "type": "number"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "wpm": {
+          "title": "Wpm",
+          "type": "number"
+        }
+      },
+      "required": [
+        "name",
+        "wpm",
+        "max_shot_s",
+        "beats"
+      ],
+      "title": "PlanStyle",
+      "type": "object"
+    },
+    "PlannedShot": {
+      "properties": {
+        "alternatives": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Alternatives",
+          "type": "array"
+        },
+        "beat_id": {
+          "title": "Beat Id",
+          "type": "string"
+        },
+        "camera_motion": {
+          "enum": [
+            "static",
+            "handheld",
+            "push_in",
+            "pull_out",
+            "pan",
+            "whip",
+            "tracking"
+          ],
+          "title": "Camera Motion",
+          "type": "string"
+        },
+        "description": {
+          "title": "Description",
+          "type": "string"
+        },
+        "direction": {
+          "title": "Direction",
+          "type": "string"
+        },
+        "duration_s": {
+          "title": "Duration S",
+          "type": "number"
+        },
+        "framing": {
+          "enum": [
+            "ecu",
+            "cu",
+            "mcu",
+            "ms",
+            "ws",
+            "overhead",
+            "pov",
+            "screen"
+          ],
+          "title": "Framing",
+          "type": "string"
+        },
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "a_roll",
+            "b_roll",
+            "screen",
+            "text_card",
+            "reaction",
+            "product",
+            "pov",
+            "other"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "line_ids": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Line Ids",
+          "type": "array"
+        },
+        "priority": {
+          "enum": [
+            "must",
+            "nice"
+          ],
+          "title": "Priority",
+          "type": "string"
+        },
+        "record_s": {
+          "title": "Record S",
+          "type": "number"
+        },
+        "reference_shot_idx": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Reference Shot Idx"
+        },
+        "setup_id": {
+          "title": "Setup Id",
+          "type": "string"
+        },
+        "takes": {
+          "title": "Takes",
+          "type": "integer"
+        },
+        "will_be_cut": {
+          "default": false,
+          "title": "Will Be Cut",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "id",
+        "beat_id",
+        "kind",
+        "framing",
+        "camera_motion",
+        "setup_id",
+        "duration_s",
+        "record_s",
+        "takes",
+        "priority",
+        "description",
+        "direction"
+      ],
+      "title": "PlannedShot",
+      "type": "object"
+    },
+    "ProjectBrief": {
+      "properties": {
+        "audience": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Audience"
+        },
+        "constraints": {
+          "$ref": "#/$defs/Constraints",
+          "default": {
+            "can_show_face": true,
+            "crew": "solo",
+            "gear": [
+              "phone"
+            ],
+            "has_screen_content": false,
+            "locations": [],
+            "max_setups": null
+          }
+        },
+        "key_points": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Key Points",
+          "type": "array"
+        },
+        "script": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Script"
+        },
+        "target_duration_s": {
+          "anyOf": [
+            {
+              "maximum": 180,
+              "minimum": 5,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Target Duration S"
+        },
+        "tone": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Tone"
+        },
+        "topic": {
+          "maxLength": 500,
+          "minLength": 1,
+          "title": "Topic",
+          "type": "string"
+        }
+      },
+      "required": [
+        "topic"
+      ],
+      "title": "ProjectBrief",
+      "type": "object"
+    },
+    "ProjectCreateIn": {
+      "properties": {
+        "brief": {
+          "$ref": "#/$defs/ProjectBrief"
+        },
+        "style_profile_id": {
+          "format": "uuid",
+          "title": "Style Profile Id",
+          "type": "string"
+        },
+        "title": {
+          "maxLength": 200,
+          "minLength": 1,
+          "title": "Title",
+          "type": "string"
+        }
+      },
+      "required": [
+        "style_profile_id",
+        "title",
+        "brief"
+      ],
+      "title": "ProjectCreateIn",
+      "type": "object"
+    },
+    "ProjectOut": {
+      "properties": {
+        "brief": {
+          "$ref": "#/$defs/ProjectBrief"
+        },
+        "created_at": {
+          "format": "date-time",
+          "title": "Created At",
+          "type": "string"
+        },
+        "has_plan": {
+          "title": "Has Plan",
+          "type": "boolean"
+        },
+        "id": {
+          "format": "uuid",
+          "title": "Id",
+          "type": "string"
+        },
+        "plan_job_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Plan Job Id"
+        },
+        "status": {
+          "enum": [
+            "planning",
+            "shooting",
+            "editing",
+            "done"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "style_name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Style Name"
+        },
+        "style_profile_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Style Profile Id"
+        },
+        "title": {
+          "title": "Title",
+          "type": "string"
+        },
+        "updated_at": {
+          "format": "date-time",
+          "title": "Updated At",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "status",
+        "style_profile_id",
+        "style_name",
+        "brief",
+        "has_plan",
+        "created_at",
+        "updated_at"
+      ],
+      "title": "ProjectOut",
+      "type": "object"
+    },
+    "ProjectPatch": {
+      "properties": {
+        "brief": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ProjectBrief"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "title": {
+          "anyOf": [
+            {
+              "maxLength": 200,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Title"
+        }
+      },
+      "title": "ProjectPatch",
       "type": "object"
     },
     "ReferenceCreateIn": {
@@ -1164,6 +1680,362 @@
       "title": "ReferenceOut",
       "type": "object"
     },
+    "RegenerateIn": {
+      "properties": {
+        "instruction": {
+          "anyOf": [
+            {
+              "maxLength": 500,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Instruction"
+        },
+        "scope": {
+          "enum": [
+            "hook",
+            "beat",
+            "shot",
+            "all"
+          ],
+          "title": "Scope",
+          "type": "string"
+        },
+        "target_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Target Id"
+        }
+      },
+      "required": [
+        "scope"
+      ],
+      "title": "RegenerateIn",
+      "type": "object"
+    },
+    "ScriptLine": {
+      "properties": {
+        "beat_id": {
+          "title": "Beat Id",
+          "type": "string"
+        },
+        "delivery_note": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Delivery Note"
+        },
+        "emphasis_words": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Emphasis Words",
+          "type": "array"
+        },
+        "est_duration_s": {
+          "title": "Est Duration S",
+          "type": "number"
+        },
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "text": {
+          "title": "Text",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "beat_id",
+        "text",
+        "est_duration_s"
+      ],
+      "title": "ScriptLine",
+      "type": "object"
+    },
+    "Setup": {
+      "properties": {
+        "audio": {
+          "title": "Audio",
+          "type": "string"
+        },
+        "framing_summary": {
+          "title": "Framing Summary",
+          "type": "string"
+        },
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "lighting": {
+          "title": "Lighting",
+          "type": "string"
+        },
+        "location": {
+          "title": "Location",
+          "type": "string"
+        },
+        "orientation": {
+          "const": "vertical",
+          "default": "vertical",
+          "title": "Orientation",
+          "type": "string"
+        },
+        "props": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Props",
+          "type": "array"
+        }
+      },
+      "required": [
+        "id",
+        "location",
+        "framing_summary",
+        "lighting",
+        "audio"
+      ],
+      "title": "Setup",
+      "type": "object"
+    },
+    "ShareOut": {
+      "properties": {
+        "path": {
+          "title": "Path",
+          "type": "string"
+        },
+        "token": {
+          "title": "Token",
+          "type": "string"
+        }
+      },
+      "required": [
+        "token",
+        "path"
+      ],
+      "title": "ShareOut",
+      "type": "object"
+    },
+    "ShootPlan": {
+      "properties": {
+        "checklist_notes": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Checklist Notes",
+          "type": "array"
+        },
+        "music_brief": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Music Brief"
+        },
+        "project_id": {
+          "format": "uuid",
+          "title": "Project Id",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": 1,
+          "default": 1,
+          "title": "Schema Version",
+          "type": "integer"
+        },
+        "script": {
+          "items": {
+            "$ref": "#/$defs/ScriptLine"
+          },
+          "title": "Script",
+          "type": "array"
+        },
+        "setups": {
+          "items": {
+            "$ref": "#/$defs/Setup"
+          },
+          "title": "Setups",
+          "type": "array"
+        },
+        "shoot_order": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Shoot Order",
+          "type": "array"
+        },
+        "shots": {
+          "items": {
+            "$ref": "#/$defs/PlannedShot"
+          },
+          "title": "Shots",
+          "type": "array"
+        },
+        "style_profile_id": {
+          "format": "uuid",
+          "title": "Style Profile Id",
+          "type": "string"
+        },
+        "target_duration_s": {
+          "title": "Target Duration S",
+          "type": "number"
+        },
+        "title_options": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Title Options",
+          "type": "array"
+        },
+        "warnings": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Warnings",
+          "type": "array"
+        },
+        "word_budget": {
+          "title": "Word Budget",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "project_id",
+        "style_profile_id",
+        "target_duration_s",
+        "word_budget",
+        "title_options",
+        "script",
+        "shots",
+        "setups",
+        "shoot_order"
+      ],
+      "title": "ShootPlan",
+      "type": "object"
+    },
+    "ShootPlanOut": {
+      "properties": {
+        "plan": {
+          "$ref": "#/$defs/ShootPlan"
+        },
+        "project_id": {
+          "format": "uuid",
+          "title": "Project Id",
+          "type": "string"
+        },
+        "style": {
+          "$ref": "#/$defs/PlanStyle"
+        },
+        "title": {
+          "title": "Title",
+          "type": "string"
+        },
+        "updated_at": {
+          "format": "date-time",
+          "title": "Updated At",
+          "type": "string"
+        },
+        "version": {
+          "title": "Version",
+          "type": "integer"
+        },
+        "word_count": {
+          "title": "Word Count",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "project_id",
+        "title",
+        "version",
+        "plan",
+        "word_count",
+        "style",
+        "updated_at"
+      ],
+      "title": "ShootPlanOut",
+      "type": "object"
+    },
+    "ShootPlanPatch": {
+      "description": "Manual edits. Each is optional; the plan is re-derived and re-validated afterwards.",
+      "properties": {
+        "lines": {
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/$defs/LineEdit"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Lines"
+        },
+        "shot_order": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Shot Order"
+        },
+        "shots": {
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/$defs/ShotEdit"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Shots"
+        }
+      },
+      "title": "ShootPlanPatch",
+      "type": "object"
+    },
     "Shot": {
       "properties": {
         "beat_id": {
@@ -1256,6 +2128,75 @@
         "description"
       ],
       "title": "Shot",
+      "type": "object"
+    },
+    "ShotEdit": {
+      "properties": {
+        "description": {
+          "anyOf": [
+            {
+              "maxLength": 1000,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Description"
+        },
+        "direction": {
+          "anyOf": [
+            {
+              "maxLength": 2000,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Direction"
+        },
+        "duration_s": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0,
+              "maximum": 180,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Duration S"
+        },
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "priority": {
+          "anyOf": [
+            {
+              "enum": [
+                "must",
+                "nice"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Priority"
+        }
+      },
+      "required": [
+        "id"
+      ],
+      "title": "ShotEdit",
       "type": "object"
     },
     "SourceInfo": {
