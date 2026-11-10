@@ -1,0 +1,3 @@
+# The web image only needs its entrypoint; source is bind-mounted at runtime.
+*
+!apps/web/docker-entrypoint.sh
