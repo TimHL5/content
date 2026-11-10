@@ -26,6 +26,20 @@ function isActive(pathname: string, href: string): boolean {
 export function AppShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
 
+  // A shared plan is viewed by people without an account: no app navigation.
+  if (pathname.startsWith("/share/")) {
+    return (
+      <div className="min-h-dvh">
+        <header className="border-b border-border bg-card px-4 py-3">
+          <span className="text-lg font-semibold tracking-tight">
+            Style<span className="text-accent">Cut</span>
+          </span>
+        </header>
+        <main className="mx-auto w-full max-w-2xl px-4 pb-16 pt-6">{children}</main>
+      </div>
+    );
+  }
+
   return (
     <div className="flex min-h-dvh">
       {/* Desktop: sidebar */}

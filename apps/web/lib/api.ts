@@ -4,7 +4,13 @@ import type {
   HealthOut,
   JobAccepted,
   JobOut,
+  ProjectCreateIn,
+  ProjectOut,
   ReferenceOut,
+  RegenerateIn,
+  ShareOut,
+  ShootPlanOut,
+  ShootPlanPatch,
   StyleProfileOut,
   StyleProfilePatch,
   StyleProfileSummary,
@@ -133,4 +139,56 @@ export function patchStyleProfile(id: string, patch: StyleProfilePatch): Promise
 export async function deleteStyleProfile(id: string): Promise<void> {
   const res = await fetch(`${API_URL}/style-profiles/${id}`, { method: "DELETE" });
   if (!res.ok) throw toApiError(res.status, await readJson(res));
+}
+
+export function listProjects(): Promise<ProjectOut[]> {
+  return apiFetch<ProjectOut[]>("/projects");
+}
+
+export function getProject(id: string): Promise<ProjectOut> {
+  return apiFetch<ProjectOut>(`/projects/${id}`);
+}
+
+export function createProject(body: ProjectCreateIn): Promise<ProjectOut> {
+  return apiFetch<ProjectOut>("/projects", { method: "POST", body: JSON.stringify(body) });
+}
+
+export async function deleteProject(id: string): Promise<void> {
+  const res = await fetch(`${API_URL}/projects/${id}`, { method: "DELETE" });
+  if (!res.ok) throw toApiError(res.status, await readJson(res));
+}
+
+export function startShootPlan(projectId: string): Promise<JobAccepted> {
+  return apiFetch<JobAccepted>(`/projects/${projectId}/shoot-plan`, { method: "POST" });
+}
+
+export function getShootPlan(projectId: string): Promise<ShootPlanOut> {
+  return apiFetch<ShootPlanOut>(`/projects/${projectId}/shoot-plan`);
+}
+
+export function patchShootPlan(projectId: string, patch: ShootPlanPatch): Promise<ShootPlanOut> {
+  return apiFetch<ShootPlanOut>(`/projects/${projectId}/shoot-plan`, { method: "PATCH", body: JSON.stringify(patch) });
+}
+
+export function regenerateShootPlan(projectId: string, body: RegenerateIn): Promise<JobAccepted> {
+  return apiFetch<JobAccepted>(`/projects/${projectId}/shoot-plan/regenerate`, {
+    method: "POST",
+    body: JSON.stringify(body),
+  });
+}
+
+export function sharePlan(projectId: string): Promise<ShareOut> {
+  return apiFetch<ShareOut>(`/projects/${projectId}/share`, { method: "POST" });
+}
+
+export function getSharedPlan(token: string): Promise<ShootPlanOut> {
+  return apiFetch<ShootPlanOut>(`/share/${token}`);
+}
+
+export function planPdfUrl(projectId: string): string {
+  return `${API_URL}/projects/${projectId}/shoot-plan.pdf`;
+}
+
+export function sharedPlanPdfUrl(token: string): string {
+  return `${API_URL}/share/${token}/shoot-plan.pdf`;
 }

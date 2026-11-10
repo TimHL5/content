@@ -68,7 +68,7 @@ Spec: `docs/PLAN_MODE_SPEC.md`
 - [x] `planning/generate.py`: `shoot_plan` prompt → ShootPlan. Validate that beat timings sum to the target ±10% and that every must-have beat from the profile has ≥1 shot. Repair loop on failure.
 - [x] Shoot-order optimizer: group shots by `setup_id` (location+framing+lighting) so the creator changes setups as rarely as possible.
 - [x] Regenerate a single shot or beat ("give me another hook").
-- [ ] Web (mobile-first): Script view, Shot List (edit order), Shoot Checklist (shoot order, tap to check off), and Teleprompter (scrolling at target WPM, mirrored option).
+- [x] Web (mobile-first): Script view, Shot List (edit order), Shoot Checklist (shoot order, tap to check off), and Teleprompter (scrolling at target WPM, mirrored option).
 - [ ] Export the plan as PDF and a shareable read-only link.
 
 **Done when:** from a profile and a one-line topic, the plan generates in <20s, the script fits the word budget, and the checklist works one-handed on a phone.

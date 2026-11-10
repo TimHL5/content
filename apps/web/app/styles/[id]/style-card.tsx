@@ -8,7 +8,7 @@ import { useState, type ReactNode } from "react";
 
 import { BarChart } from "@/components/charts/bar-chart";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Card, CardDescription, CardTitle } from "@/components/ui/card";
 import { ApiError, deleteStyleProfile, getStyleProfile, patchStyleProfile } from "@/lib/api";
 import { humanize, pacingBins, pacingLabel, percent, seconds, shotLengthHistogram, trim } from "@/lib/style-stats";
@@ -356,7 +356,10 @@ export function StyleCard({ id }: { id: string }) {
         </Section>
       )}
 
-      <div className="flex justify-end">
+      <div className="flex flex-wrap justify-end gap-2">
+        <Link href={`/projects/new?style=${id}`} className={buttonVariants()}>
+          Plan a video in this style
+        </Link>
         <Button
           variant="outline"
           disabled={remove.isPending}
