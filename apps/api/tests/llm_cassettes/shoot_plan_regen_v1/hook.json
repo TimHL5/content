@@ -1,0 +1,35 @@
+{
+  "script": [
+    {
+      "id": "X1",
+      "beat_id": "wrong_beat",
+      "text": "Your rent is quietly eating your savings every month.",
+      "emphasis_words": [
+        "quietly",
+        "savings"
+      ],
+      "delivery_note": null
+    }
+  ],
+  "shots": [
+    {
+      "id": "X9",
+      "beat_id": "wrong_beat",
+      "line_ids": [
+        "X1"
+      ],
+      "kind": "a_roll",
+      "framing": "ecu",
+      "camera_motion": "static",
+      "setup_id": "desk",
+      "duration_s": 2.5,
+      "priority": "must",
+      "description": "extreme close-up, leaning in",
+      "direction": "Prop the phone at eye level and look into the lens.",
+      "will_be_cut": true,
+      "reference_shot_idx": null,
+      "alternatives": []
+    }
+  ],
+  "setups": []
+}

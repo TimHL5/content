@@ -1,0 +1,34 @@
+{
+  "script": [],
+  "shots": [
+    {
+      "id": "ZZ",
+      "beat_id": "cta",
+      "line_ids": [],
+      "kind": "b_roll",
+      "framing": "ws",
+      "camera_motion": "static",
+      "setup_id": "street",
+      "duration_s": 2.0,
+      "priority": "nice",
+      "description": "walking past apartment buildings",
+      "direction": "Prop the phone at eye level and look into the lens.",
+      "will_be_cut": false,
+      "reference_shot_idx": null,
+      "alternatives": [
+        "a close-up of your hands instead"
+      ]
+    }
+  ],
+  "setups": [
+    {
+      "id": "street",
+      "location": "street outside",
+      "framing_summary": "wide, phone held at chest",
+      "lighting": "open shade",
+      "audio": "no sound needed",
+      "orientation": "vertical",
+      "props": []
+    }
+  ]
+}
